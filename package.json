@@ -2,9 +2,15 @@
   "name": "cdsandbox",
   "version": "1.0.0",
   "private": true,
-  "main": "app.js",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "intern"
+  },
   "dependencies": {
     "express": "^4.17.1",
     "stoppable": "^1.1.0"
+  },
+  "devDependencies": {
+    "intern": "^4.9.0"
   }
 }

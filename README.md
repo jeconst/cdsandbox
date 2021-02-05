@@ -8,6 +8,12 @@ Continuous delivery sandbox.
 npm install
 ```
 
+## Test
+
+```
+npm test
+```
+
 ## Run
 
 ```
