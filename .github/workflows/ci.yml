@@ -32,5 +32,3 @@ jobs:
       env:
         RUNNER_CONTEXT: ${{ toJSON(runner) }}
       run: echo "$RUNNER_CONTEXT"
-    - name: Dump strategy context
-      env:
