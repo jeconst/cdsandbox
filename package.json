@@ -4,13 +4,13 @@
   "private": true,
   "main": "src/server.js",
   "scripts": {
-    "test": "intern"
+    "test": "jest"
   },
   "dependencies": {
     "express": "^4.17.1",
     "stoppable": "^1.1.0"
   },
   "devDependencies": {
-    "intern": "^4.9.0"
+    "jest": "^26.6.3"
   }
 }

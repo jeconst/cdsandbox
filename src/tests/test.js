@@ -1,12 +1,9 @@
-const { describe, it } = intern.getPlugin("interface.bdd");
-const { expect } = intern.getPlugin("chai");
-
 describe("cdsandbox", () => {
   it("works as expected", () => {
-    expect(1 + 1).to.equal(2);
+    expect(1 + 1).toBe(2);
   });
 
-  it("fails as expected", () => {
-    expect(2 + 2).to.equal(5);
+  it("also works as expected", () => {
+    expect(2 + 2).toBe(4);
   });
 });
