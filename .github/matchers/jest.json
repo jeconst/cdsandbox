@@ -5,6 +5,7 @@
       "pattern": [
         {
           "regexp": "^FAIL (.+)$",
+          "message": 0,
           "file": 1
         }
       ]
