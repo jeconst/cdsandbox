@@ -1,0 +1,14 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "jest",
+      "pattern": [
+        {
+          "regexp": "^FAIL (.+)$",
+          "file": 1
+        }
+      ]
+    }
+  ]
+}
+

@@ -22,4 +22,7 @@ jobs:
         run: npm ci
 
       - name: Test
-        run: npm test
+        run: |
+          echo "::add-matcher::.github/matchers/jest.json"
+          npm test
+          echo "::remove-matcher owner=jest::"
