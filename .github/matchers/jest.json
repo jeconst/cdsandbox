@@ -5,16 +5,8 @@
       "pattern": [
         {
           "regexp": "^FAIL (.+)$",
+          "message": 0,
           "file": 1
-        },
-        {
-          "regexp": "^  (.+)$",
-          "message": 1
-        },
-        {
-          "regexp": "^    (✓|✕) (.+)$",
-          "message": 1,
-          "loop": true
         }
       ]
     }
