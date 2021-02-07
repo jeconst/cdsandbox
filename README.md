@@ -18,5 +18,5 @@ npm test
 ## Run
 
 ```
-node app.js
+node src/server.js
 ```
