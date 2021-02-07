@@ -25,6 +25,12 @@ jobs:
     needs: build
     runs-on: ubuntu-20.04
     steps:
+      - name: Dump GitHub workspace
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: |
+          echo "$GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE"
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
