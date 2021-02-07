@@ -5,6 +5,7 @@ Continuous delivery sandbox.
 ## Prep
 
 ```
+asdf install
 npm install
 ```
 
