@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
@@ -21,32 +21,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-  test:
-    needs: build
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Dump GitHub workspace
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: |
-          echo "$GITHUB_WORKSPACE"
-          ls -la "$GITHUB_WORKSPACE"
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJSON(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJSON(runner) }}
-        run: echo "$RUNNER_CONTEXT"
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
