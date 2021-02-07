@@ -21,6 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+  test:
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
