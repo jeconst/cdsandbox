@@ -44,5 +44,5 @@ jobs:
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
-          docker run --rm ghcr.io/cdsandbox:${{ github.run_number }} npm test
+          docker run --rm ghcr.io/jeconst/cdsandbox:${{ github.run_number }} npm test
           echo "::remove-matcher owner=jest::"
