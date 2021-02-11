@@ -34,6 +34,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
