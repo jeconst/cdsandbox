@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: "ghcr.io/cdsandbox:${{ github.run_number }}"
+          tags: "ghcr.io/jeconst/cdsandbox:${{ github.run_number }}"
 
   test:
     needs: build
