@@ -20,7 +20,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build `cdsandbox` image
+      - name: Build web image
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -28,7 +28,7 @@ jobs:
           push: true
           tags: "ghcr.io/jeconst/cdsandbox:${{ github.run_number }}"
 
-      - name: Build `cdsandbox_test` image
+      - name: Build test image
         uses: docker/build-push-action@v2
         with:
           context: .
