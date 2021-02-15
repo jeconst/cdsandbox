@@ -20,12 +20,21 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Build and push
+      - name: Build `cdsandbox` image
         uses: docker/build-push-action@v2
         with:
-          push: true
           context: .
+          target: production
+          push: true
           tags: "ghcr.io/jeconst/cdsandbox:${{ github.run_number }}"
+
+      - name: Build `cdsandbox_test` image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          target: test
+          push: true
+          tags: "ghcr.io/jeconst/cdsandbox_test:${{ github.run_number }}"
 
   test:
     needs: build
@@ -44,5 +53,5 @@ jobs:
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
-          docker run --rm ghcr.io/jeconst/cdsandbox:${{ github.run_number }} npm test
+          docker run --rm ghcr.io/jeconst/cdsandbox_test:${{ github.run_number }}
           echo "::remove-matcher owner=jest::"

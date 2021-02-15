@@ -2,21 +2,45 @@
 
 Continuous delivery sandbox.
 
-## Prep
+## Development
+
+### Run tests in watch mode
 
 ```
-asdf install
-npm install
+# TODO
 ```
 
-## Test
+### Run a development server (live updating)
 
 ```
-npm test
+# TODO
 ```
 
-## Run
+## Manual Deployment
+
+### Build
 
 ```
-node src/server.js
+docker build -t cdsandbox:latest --target production .
+docker build -t cdsandbox_test:latest --target test .
+```
+
+### Test
+
+```
+docker run --rm cdsandbox_test:latest
+```
+
+TODO: With database
+
+### Run (locally)
+
+```
+docker run --rm -p 8080:80 cdsandbox:latest
+```
+
+### Deploy
+
+```
+# TODO
 ```
