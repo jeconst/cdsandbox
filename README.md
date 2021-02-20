@@ -21,14 +21,14 @@ Continuous delivery sandbox.
 ### Build
 
 ```
-docker build -t cdsandbox:latest --target production .
-docker build -t cdsandbox_test:latest --target test .
+docker build -t cdsandbox:<tag> --target production .
+docker build -t cdsandbox_test:<tag> --target test .
 ```
 
 ### Test
 
 ```
-docker run --rm cdsandbox_test:latest
+docker run --rm cdsandbox_test:<tag>
 ```
 
 TODO: With database
@@ -36,7 +36,7 @@ TODO: With database
 ### Run (locally)
 
 ```
-docker run --rm -p 8080:80 cdsandbox:latest
+docker run --rm -p 8080:80 cdsandbox:<tag>
 ```
 
 ### Deploy
