@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+docker run --rm \
+  -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
+  -v "$PWD/infra:/data" --workdir /data \
+  -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+  hashicorp/terraform:0.14.7 "$@"
