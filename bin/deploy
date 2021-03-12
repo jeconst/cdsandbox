@@ -9,8 +9,7 @@ bin/terraform init -no-color
 echo "Ensuring plan is empty"
 bin/terraform plan -detailed-exitcode -no-color
 
-DEPLOYMENT_TARGET=$(bin/terraform output -json deployment_target)
-export DEPLOYMENT_TARGET
+target_infrastructure_json=$(bin/terraform output -json deployment_target)
 
 echo "Building deployer"
 docker build --tag "cdsandbox_deployer:$tag" "$PWD/infra/deployer"
@@ -19,5 +18,4 @@ echo "Executing deploy"
 docker run --rm \
   -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
   -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-  -e DEPLOYMENT_TARGET \
-  "cdsandbox_deployer:$tag" deploy "$tag"
+  "cdsandbox_deployer:$tag" deploy "$tag" "$target_infrastructure_json"

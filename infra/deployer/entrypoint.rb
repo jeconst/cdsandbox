@@ -6,33 +6,34 @@ require "bundler/setup"
 Bundler.require(:default)
 
 module Deployer
-  def self.deploy(tag)
-    infrastructure_json = ENV.fetch("DEPLOYMENT_TARGET") # TODO: Use arg instead of ENV
+  def self.deploy(tag, infrastructure_json)
     infrastructure = JSON.parse(infrastructure_json, symbolize_names: true)
 
-    puts '"Deploying"'
-    puts infrastructure.inspect
+    region = infrastructure.fetch(:region)
+    repository_url = infrastructure.fetch(:repository_url)
+    cluster_name = infrastructure.fetch(:cluster_name)
+    service_name = infrastructure.fetch(:service_name)
+    subnets = infrastructure.fetch(:subnets)
+    security_groups = infrastructure.fetch(:security_groups)
 
-    # region = infrastructure.fetch(:region)
-    # repository_url = infrastructure.fetch(:repository_url)
-    # cluster_name = infrastructure.fetch(:cluster_name)
-    # service_name = infrastructure.fetch(:service_name)
-    # subnets = infrastructure.fetch(:subnets)
-    # security_groups = infrastructure.fetch(:security_groups)
-    #
-    # ecs_client = Aws::ECS::Client.new(region: region)
+    pp infrastructure
+
+    ecs_client = Aws::ECS::Client.new(region: region)
+
+    ecs_client.register_task_definition(
+      family: service_name,
+      requires_compatibilities: ["FARGATE"],
+      network_mode: "awsvpc",
+      container_definitions: [
+        {
+          name: "web",
+          image: "#{repository_url}:#{tag}",
+        }
+      ],
+    )
+
     # service = ecs_client.describe_services({ cluster: cluster_name, services: [service_name] }).services.first
     #
-    # ecs_client.register_task_definition(
-    #   family: service_name,
-    #   network_mode: "awsvpc",
-    #   container_definitions: [
-    #     {
-    #       name: "web",
-    #       image: "#{repository_url}:#{tag}",
-    #     }
-    #   ],
-    # )
 
     # ecs_client.create_task_set({
     #   service: service_name,
