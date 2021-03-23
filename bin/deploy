@@ -3,18 +3,19 @@ set -euo pipefail
 
 tag="${1:-latest}"
 
-echo "Initializing terraform"
+echo "Initializing Terraform..."
 bin/terraform init -no-color
 
-echo "Ensuring plan is empty"
+echo "Ensuring plan is empty..."
 bin/terraform plan -detailed-exitcode -no-color
 
+echo "Reading target infrastructure..."
 target_infrastructure_json=$(bin/terraform output -json deployment_target)
 
-echo "Building deployer"
+echo "Building deployer..."
 docker build --tag "cdsandbox_deployer:$tag" "$PWD/infra/deployer"
 
-echo "Executing deploy"
+echo "Executing deploy..."
 docker run --rm \
   -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
   -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \

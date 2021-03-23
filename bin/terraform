@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-docker run --rm \
+docker run --rm -i \
   -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
   -v "$PWD/infra:/data" --workdir /data \
   -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
