@@ -98,7 +98,6 @@ resource "aws_security_group_rule" "web_server_egress_all" {
   ipv6_cidr_blocks  = ["::/0"]
 }
 
-
 resource "aws_security_group" "load_balancer" {
   name        = "loadbalancer"
   description = "Internet-facing load balancer"

@@ -4,5 +4,6 @@ source "https://rubygems.org"
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
+gem "aws-sdk-codedeploy", "~> 1.40"
 gem "aws-sdk-ecs", "~> 1.74"
 gem "rexml"

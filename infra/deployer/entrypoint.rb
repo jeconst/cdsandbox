@@ -12,29 +12,33 @@ module Deployer
 
       region = infrastructure.fetch(:region)
       repository_url = infrastructure.fetch(:repository_url)
-      cluster_name = infrastructure.fetch(:cluster_name)
-      service_name = infrastructure.fetch(:service_name)
-      subnets = infrastructure.fetch(:subnets)
+      application_name = infrastructure.fetch(:application_name)
+      deployment_group_name = infrastructure.fetch(:deployment_group_name)
+      log_group_name = infrastructure.fetch(:log_group_name)
 
       ecs_client = Aws::ECS::Client.new(region: region)
+      code_deploy_client = Aws::CodeDeploy::Client.new(region: region)
 
       task_definition_arn = register_task_definition(
         ecs_client: ecs_client,
-        family: service_name,
+        family: application_name,
         repository_url: repository_url,
         tag: tag,
+        log_group_name: log_group_name,
       )
 
-      update_service(
-        service_name: service_name,
+      create_deployment(
+        code_deploy_client: code_deploy_client,
+        application_name: application_name,
+        deployment_group_name: deployment_group_name,
         task_definition_arn: task_definition_arn,
       )
     end
 
     private
 
-    def register_task_definition(ecs_client:, family:, repository_url:, tag:)
-      response = ecs_client.register_task_definition(
+    def register_task_definition(ecs_client:, family:, repository_url:, tag:, log_group_name:)
+      response = ecs_client.register_task_definition({
         family: family,
         requires_compatibilities: ["FARGATE"],
         network_mode: "awsvpc",
@@ -48,11 +52,17 @@ module Deployer
             port_mappings: [
               { container_port: 80, protocol: "tcp" },
             ],
-            # log_configuration: TODO
-            # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html
+            log_configuration: {
+              log_driver: "awslogs",
+              options: {
+                "awslogs-region" => ecs_client.config.region,
+                "awslogs-group" => log_group_name,
+                "awslogs-stream-prefix" => "ecs",
+              },
+            },
           },
         ],
-      )
+      })
 
       task_definition = response.task_definition
       puts "Created task definition #{task_definition.family}:#{task_definition.revision}"
@@ -60,36 +70,34 @@ module Deployer
       task_definition.task_definition_arn
     end
 
-    def update_service(service_name:, task_definition_arn:)
-      # ecs_client.create_task_set({
-      #   service: service_name,
-      #   cluster: cluster_name,
-      #   launch_type: "FARGATE",
-      #   task_definition: "arn:aws:ecs:us-east-2:397731487442:task-definition/fargate-test-web:7", # FIXME
-      #   network_configuration: {
-      #     awsvpc_configuration: {
-      #       subnets: subnets,
-      #       security_groups: security_groups,
-      #       assign_public_ip: "ENABLED", # FIXME
-      #     },
-      #   },
-      #   scale: { value: 100, unit: "PERCENT" },
-      #   # load_balancers: [
-      #   #   {
-      #   #     target_group_arn: "String",
-      #   #     load_balancer_name: "String",
-      #   #     container_name: "String",
-      #   #     container_port: 1,
-      #   #   },
-      #   # ],
-      #   # client_token: "String",
-      #   # tags: [
-      #   #   {
-      #   #     key: "TagKey",
-      #   #     value: "TagValue",
-      #   #   },
-      #   # ],
-      # })
+    def create_deployment(code_deploy_client:, application_name:, deployment_group_name:, task_definition_arn:)
+      app_spec = {
+        version: "0.0",
+        Resources: [
+          TargetService: {
+            Type: "AWS::ECS::Service",
+            Properties: {
+              TaskDefinition: task_definition_arn,
+              LoadBalancerInfo: {
+                ContainerName: "web",
+                ContainerPort: 80,
+              },
+              PlatformVersion: "LATEST",
+            },
+          }
+        ]
+      }
+
+      puts code_deploy_client.create_deployment({
+        application_name: application_name,
+        deployment_group_name: deployment_group_name,
+        revision: {
+          revision_type: "AppSpecContent",
+          app_spec_content: {
+            content: JSON.generate(app_spec),
+          },
+        },
+      })
     end
   end
 end
