@@ -7,12 +7,15 @@ locals {
   #   10 = Public /20
   #   11 = Spare /20
 
+  availability_zones = toset(["us-east-2a", "us-east-2b"])
+
   availability_zone_cidr_blocks = {
-    "us-east-2a" = cidrsubnet(aws_vpc.this.cidr_block, 2, 0) # 00*
-    "us-east-2b" = cidrsubnet(aws_vpc.this.cidr_block, 2, 1) # 01*
-    "us-east-2c" = cidrsubnet(aws_vpc.this.cidr_block, 2, 2) # 10*
+    for index, name in sort(data.aws_availability_zones.this.names) :
+    name => cidrsubnet(aws_vpc.this.cidr_block, 2, index) # Two bits for AZ /18
   }
 }
+
+data "aws_availability_zones" "this" {}
 
 resource "aws_vpc" "this" {
   cidr_block = "10.0.0.0/16"
@@ -23,11 +26,11 @@ resource "aws_vpc" "this" {
 }
 
 resource "aws_subnet" "private" {
-  for_each = local.availability_zone_cidr_blocks
+  for_each = local.availability_zones
 
   vpc_id            = aws_vpc.this.id
   availability_zone = each.key
-  cidr_block        = cidrsubnet(each.value, 1, 0) # xx0*
+  cidr_block        = cidrsubnet(local.availability_zone_cidr_blocks[each.key], 1, 0) # xx0 /19
 
   tags = {
     Name       = "cdsandbox-private-${each.key}"
@@ -36,11 +39,11 @@ resource "aws_subnet" "private" {
 }
 
 resource "aws_subnet" "public" {
-  for_each = local.availability_zone_cidr_blocks
+  for_each = local.availability_zones
 
   vpc_id                  = aws_vpc.this.id
   availability_zone       = each.key
-  cidr_block              = cidrsubnet(each.value, 2, 2) # xx10*
+  cidr_block              = cidrsubnet(local.availability_zone_cidr_blocks[each.key], 2, 2) # xx10 /20
   map_public_ip_on_launch = true
 
   tags = {
@@ -67,7 +70,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  for_each = local.availability_zone_cidr_blocks
+  for_each = local.availability_zones
 
   subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public.id
