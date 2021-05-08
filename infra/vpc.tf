@@ -77,7 +77,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_security_group" "web_server" {
-  name        = "webserver"
+  name        = "cdsandbox-webserver"
   description = "Web server behind load balancer"
   vpc_id      = aws_vpc.this.id
 }
@@ -102,7 +102,7 @@ resource "aws_security_group_rule" "web_server_egress_all" {
 }
 
 resource "aws_security_group" "load_balancer" {
-  name        = "loadbalancer"
+  name        = "cdsandbox-loadbalancer"
   description = "Internet-facing load balancer"
   vpc_id      = aws_vpc.this.id
 }
