@@ -5,7 +5,9 @@ const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  userAgent = req.headers["user-agent"]
+  console.log(`Received request from ${userAgent}`);
+  res.send(`Hello, World! It is currently ${Date()}`);
 });
 
 const forceCloseAfter = 5000; // milliseconds
