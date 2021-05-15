@@ -1,7 +1,12 @@
 #!/bin/bash
 set -euo pipefail
 
-tag="${1:-latest}"
+tag=$1
+
+if [ -z "$tag" ]; then
+  echo "Error: Tag required" >&2
+  exit 1
+fi
 
 echo "Initializing Terraform..."
 bin/terraform init -no-color
@@ -13,10 +18,10 @@ echo "Reading target infrastructure..."
 target_infrastructure_json=$(bin/terraform output -json deployment_target)
 
 echo "Building deployer..."
-docker build --tag "cdsandbox_deployer:$tag" "$PWD/infra/deployer"
+docker build --tag "cdsandbox-deployer:$tag" "$PWD/infra/deployer"
 
 echo "Executing deploy..."
 docker run --rm \
   -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
   -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
-  "cdsandbox_deployer:$tag" deploy "$tag" "$target_infrastructure_json"
+  "cdsandbox-deployer:$tag" deploy "$tag" "$target_infrastructure_json"

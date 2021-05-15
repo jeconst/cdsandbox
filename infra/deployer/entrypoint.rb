@@ -11,25 +11,26 @@ module Deployer
       infrastructure = JSON.parse(infrastructure_json, symbolize_names: true)
 
       region = infrastructure.fetch(:region)
-      repository_url = infrastructure.fetch(:repository_url)
-      application_name = infrastructure.fetch(:application_name)
+      registry_url = infrastructure.fetch(:registry_url)
+      image_name = infrastructure.fetch(:image_name)
+      codedeploy_application_name = infrastructure.fetch(:codedeploy_application_name)
       deployment_group_name = infrastructure.fetch(:deployment_group_name)
       log_group_name = infrastructure.fetch(:log_group_name)
 
       ecs_client = Aws::ECS::Client.new(region: region)
-      code_deploy_client = Aws::CodeDeploy::Client.new(region: region)
+      codedeploy_client = Aws::CodeDeploy::Client.new(region: region)
 
       task_definition_arn = register_task_definition(
         ecs_client: ecs_client,
-        family: application_name,
-        repository_url: repository_url,
+        registry_url: registry_url,
+        image_name: image_name,
         tag: tag,
         log_group_name: log_group_name,
       )
 
       create_deployment(
-        code_deploy_client: code_deploy_client,
-        application_name: application_name,
+        codedeploy_client: codedeploy_client,
+        application_name: codedeploy_application_name,
         deployment_group_name: deployment_group_name,
         task_definition_arn: task_definition_arn,
       )
@@ -37,9 +38,9 @@ module Deployer
 
     private
 
-    def register_task_definition(ecs_client:, family:, repository_url:, tag:, log_group_name:)
+    def register_task_definition(ecs_client:, registry_url:, image_name:, tag:, log_group_name:)
       response = ecs_client.register_task_definition({
-        family: family,
+        family: image_name,
         requires_compatibilities: ["FARGATE"],
         network_mode: "awsvpc",
         execution_role_arn: "arn:aws:iam::397731487442:role/ecsTaskExecutionRole", # TODO: pass from TF
@@ -48,7 +49,7 @@ module Deployer
         container_definitions: [
           {
             name: "web",
-            image: "#{repository_url}:#{tag}",
+            image: "#{registry_url}/#{image_name}:#{tag}",
             port_mappings: [
               { container_port: 80, protocol: "tcp" },
             ],
@@ -70,25 +71,27 @@ module Deployer
       task_definition.task_definition_arn
     end
 
-    def create_deployment(code_deploy_client:, application_name:, deployment_group_name:, task_definition_arn:)
+    def create_deployment(codedeploy_client:, application_name:, deployment_group_name:, task_definition_arn:)
       app_spec = {
         version: "0.0",
         Resources: [
-          TargetService: {
-            Type: "AWS::ECS::Service",
-            Properties: {
-              TaskDefinition: task_definition_arn,
-              LoadBalancerInfo: {
-                ContainerName: "web",
-                ContainerPort: 80,
+          {
+            TargetService: {
+              Type: "AWS::ECS::Service",
+              Properties: {
+                TaskDefinition: task_definition_arn,
+                LoadBalancerInfo: {
+                  ContainerName: "web",
+                  ContainerPort: 80,
+                },
+                PlatformVersion: "LATEST",
               },
-              PlatformVersion: "LATEST",
-            },
+            }
           }
         ]
       }
 
-      puts code_deploy_client.create_deployment({
+      deployment_output = codedeploy_client.create_deployment({
         application_name: application_name,
         deployment_group_name: deployment_group_name,
         revision: {
@@ -98,6 +101,8 @@ module Deployer
           },
         },
       })
+
+      puts "Created deployment #{deployment_output.deployment_id}"
     end
   end
 end

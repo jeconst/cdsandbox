@@ -19,10 +19,29 @@ provider "aws" {
   region = "us-east-2"
 }
 
+data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 resource "aws_cloudwatch_log_group" "this" {
   name = "cdsandbox"
+}
+
+resource "aws_cloudwatch_log_resource_policy" "events" {
+  policy_name = "cdsandbox-events"
+  policy_document = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = "events.amazonaws.com" }
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+        ]
+        Resource = "${aws_cloudwatch_log_group.this.arn}:*"
+      }
+    ]
+  })
 }
 
 resource "aws_lb" "this" {
@@ -67,8 +86,13 @@ resource "aws_ecs_cluster" "this" {
   # }
 }
 
-resource "aws_ecr_repository" "this" {
-  name                 = "cdsandbox-web"
+resource "aws_ecr_repository" "app" {
+  name                 = "cdsandbox/cdsandbox"
+  image_tag_mutability = "IMMUTABLE"
+}
+
+resource "aws_ecr_repository" "test" {
+  name                 = "cdsandbox/cdsandbox-test"
   image_tag_mutability = "IMMUTABLE"
 }
 
@@ -102,6 +126,7 @@ resource "aws_ecs_service" "this" {
   name    = "cdsandbox-web"
   cluster = aws_ecs_cluster.this.id
 
+  # TODO: Can it be created without a placeholder task definition?
   launch_type     = "FARGATE"
   task_definition = aws_ecs_task_definition.placeholder.arn
   desired_count   = 1
@@ -129,8 +154,8 @@ resource "aws_ecs_service" "this" {
   }
 }
 
-resource "aws_iam_role" "ecs_codedeploy" {
-  name = "ecsCodeDeployRole"
+resource "aws_iam_role" "codedeploy" {
+  name = "cdsandbox-codedeploy"
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"]
 
@@ -138,12 +163,9 @@ resource "aws_iam_role" "ecs_codedeploy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = ["codedeploy.amazonaws.com"]
-        }
+        Effect    = "Allow"
+        Principal = { Service = ["codedeploy.amazonaws.com"] }
+        Action    = "sts:AssumeRole"
       }
     ]
   })
@@ -156,8 +178,8 @@ resource "aws_codedeploy_app" "this" {
 
 resource "aws_codedeploy_deployment_group" "this" {
   app_name               = aws_codedeploy_app.this.name
-  deployment_group_name  = "cdsandbox-web"
-  service_role_arn       = aws_iam_role.ecs_codedeploy.arn
+  deployment_group_name  = "main"
+  service_role_arn       = aws_iam_role.codedeploy.arn
   deployment_config_name = "CodeDeployDefault.ECSAllAtOnce"
 
   auto_rollback_configuration {
@@ -203,12 +225,29 @@ resource "aws_codedeploy_deployment_group" "this" {
   }
 }
 
+resource "aws_cloudwatch_event_rule" "codedeploy" {
+  name        = "cdsandbox-codedeploy"
+  description = "Deployment events for cdsandbox"
+
+  event_pattern = <<-EOF
+    {
+      "source": ["aws.codedeploy"]
+    }
+  EOF
+}
+
+resource "aws_cloudwatch_event_target" "codedeploy_log" {
+  rule = aws_cloudwatch_event_rule.codedeploy.name
+  arn  = aws_cloudwatch_log_group.this.arn
+}
+
 output "deployment_target" {
   value = {
-    region                = data.aws_region.current.name
-    repository_url        = aws_ecr_repository.this.repository_url
-    application_name      = aws_codedeploy_app.this.name
-    deployment_group_name = aws_codedeploy_deployment_group.this.deployment_group_name
-    log_group_name        = aws_cloudwatch_log_group.this.name
+    region                      = data.aws_region.current.name
+    registry_url                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/cdsandbox"
+    image_name                  = "cdsandbox"
+    codedeploy_application_name = aws_codedeploy_app.this.name
+    deployment_group_name       = aws_codedeploy_deployment_group.this.deployment_group_name
+    log_group_name              = aws_cloudwatch_log_group.this.name
   }
 }

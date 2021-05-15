@@ -1,0 +1,12 @@
+#!/bin/bash
+set -euo pipefail
+
+tag=$1
+
+if [ -z "$tag" ]; then
+  echo "Error: Tag required" >&2
+  exit 1
+fi
+
+docker build -t "cdsandbox:$tag" --target production .
+docker build -t "cdsandbox-test:$tag" --target test .
