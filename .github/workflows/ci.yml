@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  TAG: "${{ github.run_number }}-${{ github.sha }}"
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -13,28 +16,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Login to GitHub Container Registry
+      - name: Read infrastructure
+        run: |
+          infrastructure_json=$(bin/terraform output -json deployment_target)
+          echo "INFRASTRUCTURE_JSON=$infrastructure_json" >> $GITHUB_ENV
+
+      - name: Login to ECR
         uses: docker/login-action@v1 
         with:
-          registry: ghcr.io
+          registry: ${{ fromJSON(env.INFRASTRUCTURE_JSON).registry_url }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build web image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          target: production
-          push: true
-          tags: "ghcr.io/jeconst/cdsandbox:${{ github.run_number }}"
+      - name: Build
+        run: |
+          bin/build ${{ env.TAG }}
 
-      - name: Build test image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          target: test
-          push: true
-          tags: "ghcr.io/jeconst/cdsandbox_test:${{ github.run_number }}"
+      - name: Push
+        run: |
+          bin/push ${{ env.TAG }}
 
   test:
     needs: build
@@ -43,15 +43,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Login to GitHub Container Registry
+      - name: Read infrastructure
+        run: |
+          infrastructure_json=$(bin/terraform output -json deployment_target)
+          echo "INFRASTRUCTURE_JSON=$infrastructure_json" >> $GITHUB_ENV
+
+      - name: Login to ECR
         uses: docker/login-action@v1 
         with:
-          registry: ghcr.io
+          registry: ${{ fromJSON(env.INFRASTRUCTURE_JSON).registry_url }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Test
         run: |
           echo "::add-matcher::.github/matchers/jest.json"
-          docker run --rm ghcr.io/jeconst/cdsandbox_test:${{ github.run_number }}
+          docker run --rm ${{ fromJSON(env.INFRASTRUCTURE_JSON).registry_url }}/cdsandbox-test:${{ env.TAG }}
           echo "::remove-matcher owner=jest::"
