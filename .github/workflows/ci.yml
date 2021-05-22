@@ -22,6 +22,7 @@ jobs:
 
       - name: Read infrastructure
         run: |
+          bin/terraform init
           infrastructure_json=$(bin/terraform output -json deployment_target)
           echo "INFRASTRUCTURE_JSON=$infrastructure_json" >> $GITHUB_ENV
 
@@ -51,6 +52,7 @@ jobs:
 
       - name: Read infrastructure
         run: |
+          bin/terraform init
           infrastructure_json=$(bin/terraform output -json deployment_target)
           echo "INFRASTRUCTURE_JSON=$infrastructure_json" >> $GITHUB_ENV
 
