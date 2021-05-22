@@ -281,6 +281,24 @@ resource "aws_iam_user_policy" "github_deploy" {
       },
       {
         Effect   = "Allow"
+        Action   = "ecr:GetAuthorizationToken"
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+        ]
+        Resource = [aws_ecr_repository.app.arn, aws_ecr_repository.test.arn]
+      },
+      {
+        Effect   = "Allow"
         Action   = "ecs:RegisterTaskDefinition"
         Resource = "*"
       },
