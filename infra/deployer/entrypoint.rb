@@ -13,6 +13,7 @@ module Deployer
       region = infrastructure.fetch(:region)
       registry_url = infrastructure.fetch(:registry_url)
       image_name = infrastructure.fetch(:image_name)
+      ecs_task_execution_role_arn = infrastructure.fetch(:ecs_task_execution_role_arn)
       codedeploy_application_name = infrastructure.fetch(:codedeploy_application_name)
       deployment_group_name = infrastructure.fetch(:deployment_group_name)
       log_group_name = infrastructure.fetch(:log_group_name)
@@ -25,6 +26,7 @@ module Deployer
         registry_url: registry_url,
         image_name: image_name,
         tag: tag,
+        ecs_task_execution_role_arn: ecs_task_execution_role_arn,
         log_group_name: log_group_name,
       )
 
@@ -38,12 +40,19 @@ module Deployer
 
     private
 
-    def register_task_definition(ecs_client:, registry_url:, image_name:, tag:, log_group_name:)
+    def register_task_definition(
+      ecs_client:,
+      registry_url:,
+      image_name:,
+      tag:,
+      ecs_task_execution_role_arn:,
+      log_group_name:
+    )
       response = ecs_client.register_task_definition({
         family: image_name,
         requires_compatibilities: ["FARGATE"],
         network_mode: "awsvpc",
-        execution_role_arn: "arn:aws:iam::397731487442:role/ecsTaskExecutionRole", # TODO: pass from TF
+        execution_role_arn: ecs_task_execution_role_arn,
         cpu: "256",
         memory: "512",
         container_definitions: [

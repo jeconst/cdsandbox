@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.33"
+      version = "~> 3.42"
     }
   }
 
@@ -86,6 +86,23 @@ resource "aws_ecs_cluster" "this" {
   # }
 }
 
+resource "aws_iam_role" "ecs_task_execution" {
+  name = "cdsandbox-ecs-task-execution"
+
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect    = "Allow"
+        Principal = { Service = ["ecs-tasks.amazonaws.com"] }
+        Action    = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
 resource "aws_ecr_repository" "app" {
   name                 = "cdsandbox/cdsandbox"
   image_tag_mutability = "IMMUTABLE"
@@ -100,7 +117,7 @@ resource "aws_ecs_task_definition" "placeholder" {
   family                   = "cdsandbox-placeholder"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  execution_role_arn       = "arn:aws:iam::397731487442:role/ecsTaskExecutionRole" # FIXME
+  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 
   cpu    = 256
   memory = 512
@@ -241,11 +258,62 @@ resource "aws_cloudwatch_event_target" "codedeploy_log" {
   arn  = aws_cloudwatch_log_group.this.arn
 }
 
+resource "aws_iam_user" "github" {
+  name = "cdsandbox-github"
+}
+
+resource "aws_iam_user_policy" "github_deploy" {
+  name = "deploy-cdsandbox"
+  user = aws_iam_user.github.name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # TODO: Avoid duplication of state bucket name and key
+      {
+        Effect   = "Allow"
+        Action   = "s3:ListBucket"
+        Resource = "arn:aws:s3:::justinconstantino-terraform-state"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "s3:GetObject"
+        Resource = "arn:aws:s3:::justinconstantino-terraform-state/cdsandbox.tfstate"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "ecs:RegisterTaskDefinition"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "iam:PassRole"
+        Resource = aws_iam_role.ecs_task_execution.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = "codedeploy:CreateDeployment"
+        Resource = aws_codedeploy_deployment_group.this.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = "codedeploy:GetDeploymentConfig"
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "codedeploy:RegisterApplicationRevision"
+        Resource = aws_codedeploy_app.this.arn
+      },
+    ]
+  })
+}
+
 output "deployment_target" {
   value = {
     region                      = data.aws_region.current.name
     registry_url                = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/cdsandbox"
     image_name                  = "cdsandbox"
+    ecs_task_execution_role_arn = aws_iam_role.ecs_task_execution.arn
     codedeploy_application_name = aws_codedeploy_app.this.name
     deployment_group_name       = aws_codedeploy_deployment_group.this.deployment_group_name
     log_group_name              = aws_cloudwatch_log_group.this.name

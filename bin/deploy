@@ -11,9 +11,6 @@ fi
 echo "Initializing Terraform..."
 bin/terraform init -no-color
 
-echo "Ensuring plan is empty..."
-bin/terraform plan -detailed-exitcode -no-color
-
 echo "Reading target infrastructure..."
 target_infrastructure_json=$(bin/terraform output -json deployment_target)
 
