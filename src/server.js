@@ -7,7 +7,10 @@ const app = express();
 app.get("/", (req, res) => {
   userAgent = req.headers["user-agent"]
   console.log(`Received request from ${userAgent}`);
-  res.send(`Hello, World! It is currently ${Date()}`);
+  res.send(`
+    <h1>Hello, World!</h1>
+    <p>It is currently ${Date()}</p>
+  `);
 });
 
 const forceCloseAfter = 5000; // milliseconds
