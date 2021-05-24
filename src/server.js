@@ -10,6 +10,7 @@ app.get("/", (req, res) => {
   res.send(`
     <h1>Hello, World!</h1>
     <p>It is currently ${Date()}</p>
+    <p>Updated: 2021-05-24</p>
   `);
 });
 
