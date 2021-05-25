@@ -9,7 +9,12 @@ app.get("/", (req, res) => {
   console.log(`Received request from ${userAgent}`);
   res.send(`
     <h1>Hello, World!</h1>
-    <p>It is currently ${Date()}</p>
+    <p>
+      It is currently ${Date()}
+    </p>
+    <p>
+      Updated: Mon May 24 23:49:14 CDT 2021
+    </p>
   `);
 });
 
