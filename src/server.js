@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
       It is currently ${Date()}
     </p>
     <p>
-      Updated: Mon May 24 23:49:14 CDT 2021
+      Updated: Tue May 25 22:03:08 CDT 2021
     </p>
   `);
 });
@@ -34,3 +34,7 @@ const port = 80;
 server.listen(port, hostname, () => {
   console.log(`Listening at http://${hostname}:${port}/`);
 });
+
+
+// T+10s - Old: 7/7 OK (100%) - New 5/5 OK (100%)
+// T+20s - Old: 11/13 OK (84.6%) - New 
