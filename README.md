@@ -21,17 +21,15 @@ Continuous delivery sandbox.
 ### Build
 
 ```
-docker build -t cdsandbox:<tag> --target production .
-docker build -t cdsandbox_test:<tag> --target test .
+bin/build <tag>
 ```
 
 ### Test
 
 ```
-docker run --rm cdsandbox_test:<tag>
+docker run --rm cdsandbox-test:<tag>
+# TODO: With database
 ```
-
-TODO: With database
 
 ### Run (locally)
 
@@ -42,5 +40,5 @@ docker run --rm -p 8080:80 cdsandbox:<tag>
 ### Deploy
 
 ```
-# TODO
+bin/deploy <tag>
 ```
