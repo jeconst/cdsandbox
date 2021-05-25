@@ -1,8 +1,8 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   TAG: "${{ github.run_number }}-${{ github.sha }}"
