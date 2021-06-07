@@ -8,7 +8,7 @@ if [ -z "$tag" ]; then
   exit 1
 fi
 
-target_infrastructure_json=$(bin/terraform output -json deployment_target)
+target_infrastructure_json=$(bin/read-infrastructure)
 registry_url=$(echo "$target_infrastructure_json" | jq -r '.registry_url')
 
 docker tag "cdsandbox:$tag" "$registry_url/cdsandbox:$tag"
