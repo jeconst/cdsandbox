@@ -2,11 +2,11 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_cloudwatch_log_group" "this" {
-  name = "cdsandbox"
+  name = var.app_name
 }
 
 resource "aws_cloudwatch_log_resource_policy" "events" {
-  policy_name = "cdsandbox-events"
+  policy_name = "${var.app_name}-events"
   policy_document = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -24,13 +24,13 @@ resource "aws_cloudwatch_log_resource_policy" "events" {
 }
 
 resource "aws_security_group" "web_server" {
-  name        = "cdsandbox-webserver"
+  name        = "${var.app_name}-webserver"
   description = "Web server behind load balancer"
   vpc_id      = var.vpc_id
 }
 
 resource "aws_security_group" "load_balancer" {
-  name        = "cdsandbox-loadbalancer"
+  name        = "${var.app_name}-loadbalancer"
   description = "Internet-facing load balancer"
   vpc_id      = var.vpc_id
 }
@@ -84,7 +84,7 @@ resource "aws_security_group_rule" "load_balancer_egress_to_web_server" {
 }
 
 resource "aws_lb" "this" {
-  name            = "cdsandbox"
+  name            = var.app_name
   subnets         = var.public_subnet_ids
   security_groups = [aws_security_group.load_balancer.id]
 }
@@ -92,7 +92,7 @@ resource "aws_lb" "this" {
 resource "aws_lb_target_group" "this" {
   for_each = toset(["blue", "green"])
 
-  name        = "cdsandbox-${each.value}"
+  name        = "${var.app_name}-${each.value}"
   vpc_id      = var.vpc_id
   port        = 80
   protocol    = "HTTP"
@@ -115,7 +115,7 @@ resource "aws_lb_listener" "prod_http" {
 }
 
 resource "aws_ecs_cluster" "this" {
-  name = "cdsandbox"
+  name = var.app_name
 
   # FIXME
   # capacity_providers = ["FARGATE"]
@@ -126,7 +126,7 @@ resource "aws_ecs_cluster" "this" {
 }
 
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "cdsandbox-ecs-task-execution"
+  name = "${var.app_name}-ecs-task-execution"
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"]
 
@@ -143,17 +143,17 @@ resource "aws_iam_role" "ecs_task_execution" {
 }
 
 resource "aws_ecr_repository" "app" {
-  name                 = "cdsandbox/cdsandbox"
+  name                 = "${var.app_name}/${var.app_name}"
   image_tag_mutability = "IMMUTABLE"
 }
 
 resource "aws_ecr_repository" "test" {
-  name                 = "cdsandbox/cdsandbox-test"
+  name                 = "${var.app_name}/${var.app_name}-test"
   image_tag_mutability = "IMMUTABLE"
 }
 
 resource "aws_ecs_task_definition" "placeholder" {
-  family                   = "cdsandbox-placeholder"
+  family                   = "${var.app_name}-placeholder"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
@@ -179,7 +179,7 @@ resource "aws_ecs_task_definition" "placeholder" {
 }
 
 resource "aws_ecs_service" "this" {
-  name    = "cdsandbox-web"
+  name    = "${var.app_name}-web"
   cluster = aws_ecs_cluster.this.id
 
   # TODO: Can it be created without a placeholder task definition?
@@ -211,7 +211,7 @@ resource "aws_ecs_service" "this" {
 }
 
 resource "aws_iam_role" "codedeploy" {
-  name = "cdsandbox-codedeploy"
+  name = "${var.app_name}-codedeploy"
 
   managed_policy_arns = ["arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"]
 
@@ -228,7 +228,7 @@ resource "aws_iam_role" "codedeploy" {
 }
 
 resource "aws_codedeploy_app" "this" {
-  name             = "cdsandbox-web"
+  name             = "${var.app_name}-web"
   compute_platform = "ECS"
 }
 
@@ -282,8 +282,8 @@ resource "aws_codedeploy_deployment_group" "this" {
 }
 
 resource "aws_cloudwatch_event_rule" "codedeploy" {
-  name        = "cdsandbox-codedeploy"
-  description = "Deployment events for cdsandbox"
+  name        = "${var.app_name}-codedeploy"
+  description = "Deployment events for ${var.app_name}"
 
   event_pattern = <<-EOF
     {
@@ -298,11 +298,11 @@ resource "aws_cloudwatch_event_target" "codedeploy_log" {
 }
 
 resource "aws_iam_user" "github" {
-  name = "cdsandbox-github"
+  name = "${var.app_name}-github"
 }
 
 resource "aws_iam_user_policy" "github_deploy" {
-  name = "deploy-cdsandbox"
+  name = "deploy-${var.app_name}"
   user = aws_iam_user.github.name
   policy = jsonencode({
     Version = "2012-10-17"
@@ -316,7 +316,7 @@ resource "aws_iam_user_policy" "github_deploy" {
       {
         Effect   = "Allow"
         Action   = "s3:GetObject"
-        Resource = "arn:aws:s3:::justinconstantino-terraform-state/cdsandbox.tfstate"
+        Resource = var.state_key_arn
       },
       {
         Effect   = "Allow"

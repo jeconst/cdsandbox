@@ -23,6 +23,7 @@ module "fargate_deployment_target" {
   source = "./fargate_deployment_target"
 
   app_name          = "cdsandbox"
+  state_key_arn     = "arn:aws:s3:::justinconstantino-terraform-state/cdsandbox.tfstate"
   vpc_id            = aws_vpc.this.id
   public_subnet_ids = [for subnet in aws_subnet.public : subnet.id]
 }

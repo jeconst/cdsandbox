@@ -2,6 +2,10 @@ variable "app_name" {
   type = string
 }
 
+variable "state_key_arn" {
+  type = string
+}
+
 variable "vpc_id" {
   type = string
 }
