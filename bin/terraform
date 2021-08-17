@@ -9,7 +9,7 @@ fi
 
 # ${arr[@]+"${arr[@]}"} -> https://stackoverflow.com/a/61551944/46070
 exec docker run --rm ${it_opts[@]+"${it_opts[@]}"} \
-  -v "$HOME:/infrah/home" -e "HOME=/infrah/home" \
+  -v "$HOME/.aws:/root/.aws" \
   -v "$PWD/infra:/data" --workdir /data \
   -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e TF_LOG \
   hashicorp/terraform:0.15.5 "$@"
