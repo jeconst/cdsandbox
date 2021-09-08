@@ -9,3 +9,7 @@ output "attributes" {
     log_group_name              = aws_cloudwatch_log_group.this.name
   }
 }
+
+output "deployer_access_policy_arn" {
+  value = aws_iam_policy.deployer_access.arn
+}

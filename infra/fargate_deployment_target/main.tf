@@ -297,27 +297,13 @@ resource "aws_cloudwatch_event_target" "codedeploy_log" {
   arn  = aws_cloudwatch_log_group.this.arn
 }
 
-resource "aws_iam_user" "github" {
-  name = "${var.app_name}-github"
-}
+resource "aws_iam_policy" "deployer_access" {
+  name        = "deploy-${var.app_name}"
+  description = "Allows deployment of ${var.app_name}"
 
-resource "aws_iam_user_policy" "github_deploy" {
-  name = "deploy-${var.app_name}"
-  user = aws_iam_user.github.name
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # TODO: Avoid duplication of state bucket name and key
-      {
-        Effect   = "Allow"
-        Action   = "s3:ListBucket"
-        Resource = "arn:aws:s3:::justinconstantino-terraform-state"
-      },
-      {
-        Effect   = "Allow"
-        Action   = "s3:GetObject"
-        Resource = var.state_key_arn
-      },
       {
         Effect   = "Allow"
         Action   = "ecr:GetAuthorizationToken"
