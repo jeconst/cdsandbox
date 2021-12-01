@@ -1,10 +1,30 @@
-FROM ruby:3.0.0-buster
+FROM node:16.13-bullseye AS runtime
 
 WORKDIR /deployer
 
-COPY Gemfile Gemfile.lock ./
-RUN bundle install
+################################################################################
+FROM runtime AS dev
 
-COPY entrypoint.rb .
+RUN npm install -g npm@8.1.3
 
-ENTRYPOINT ["./entrypoint.rb"]
+COPY package.json package-lock.json ./
+RUN npm install
+
+ENV PATH="/deployer/node_modules/.bin:${PATH}"
+
+ENTRYPOINT []
+CMD ["bash"]
+
+################################################################################
+FROM dev AS build
+
+COPY . .
+RUN tsc
+
+################################################################################
+FROM runtime AS production
+
+COPY --from=build /deployer/build /deployer/build
+
+ENTRYPOINT ["node", "build/index.js"]
+CMD []

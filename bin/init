@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "Building deployer..."
+docker build --tag "cdsandbox-deployer:init" "$PWD/infra/deployer"
+
+config_json=$(cat "$PWD/infra/config.json")
+
+echo "Initializing infrastructure..."
+docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$HOME/.aws:/root/.aws" \
+  -v "$PWD/infra/config.json:/infrah/config.json" \
+  -e AWS_PROFILE -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY \
+  "cdsandbox-deployer:init" init

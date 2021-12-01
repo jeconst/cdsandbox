@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+exec docker run -it --rm -v "$PWD:/deployer" "$(docker build --target dev -q .)" "$@"

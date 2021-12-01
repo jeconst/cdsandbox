@@ -1,4 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-
-bin/terraform output -json deployment_target_attributes
