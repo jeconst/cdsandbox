@@ -1,4 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-exec docker run -it --rm -v "$PWD:/deployer" "$(docker build --target dev -q .)" "$@"
+image_id=$(docker build --target dev --build-arg "DEV_USER_ID=$(id -u)" --build-arg "DEV_GROUP_ID=$(id -g)" --quiet .)
+
+exec docker run -it --rm -v "$PWD:/deployer" "$image_id" "$@"
