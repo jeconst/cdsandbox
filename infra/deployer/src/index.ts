@@ -1,4 +1,8 @@
-import { arrayBuffer } from "stream/consumers"
+import fs from "fs";
+import { Deployer } from "./deployer";
 
-console.log("hello!")
-console.log(process.argv)
+new Deployer()
+  .run(process.argv.slice(2))
+  .then(exitCode => {
+    process.exitCode = exitCode;
+  });
