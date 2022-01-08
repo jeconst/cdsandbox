@@ -9,8 +9,7 @@ import { Config, readConfig } from "./config";
 export class Deployer {
   private readonly config: Config;
 
-  constructor()
-  {
+  constructor() {
     this.config = readConfig();
   }
 
@@ -19,7 +18,7 @@ export class Deployer {
     const commandName = args.shift();
 
     if (!commandName) {
-      console.error("No command specified")
+      console.error("No command specified");
       return 1;
     }
 
@@ -39,7 +38,7 @@ export class Deployer {
       Filters: [{
         Name: "tag:Name",
         Values: [this.config.appName],
-      }]
+      }],
     }));
 
     const existingVpcs = existingVpcsResponse.Vpcs || [];

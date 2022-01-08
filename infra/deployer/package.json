@@ -5,15 +5,20 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "lint": "eslint --max-warnings=0 .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-ec2": "^3.44.0",
-    "typescript": "^4.4.4"
+    "@aws-sdk/client-ec2": "^3.44.0"
   },
   "devDependencies": {
-    "@types/node": "^16.11.7"
+    "@types/node": "^16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "eslint": "^8.6.0",
+    "eslint-plugin-import": "^2.25.4",
+    "typescript": "^4.5.4"
   }
 }
