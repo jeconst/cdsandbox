@@ -30,7 +30,7 @@ CMD ["bash"]
 FROM base AS build
 
 COPY package.json package-lock.json .
-RUN npm install --production
+RUN npm ci
 
 COPY . .
 RUN npm run build
