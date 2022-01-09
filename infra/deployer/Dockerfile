@@ -7,7 +7,10 @@ RUN npm install -g npm@8.1.3
 ################################################################################
 FROM base AS dev
 
-# This is a workaround for https://github.com/moby/moby/issues/2259
+# Allows the image to be built with a host user's uid/gid, so files written by
+# dev tooling (inside the mounted source directory) are owned by that host user
+# rather than root. Revisit if https://github.com/moby/moby/issues/2259 is
+# resolved.
 ARG DEV_USER_ID=10000
 ARG DEV_GROUP_ID=10000
 RUN groupadd --non-unique --gid ${DEV_GROUP_ID} dev && \
