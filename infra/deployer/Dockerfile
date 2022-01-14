@@ -38,8 +38,10 @@ RUN npm run build
 ################################################################################
 FROM base AS production
 
+COPY package.json package-lock.json .
+RUN npm ci --production
+
 COPY --from=build /deployer/build /deployer/build
-COPY --from=build /deployer/node_modules /deployer/node_modules
 
 ENTRYPOINT ["node", "build/index.js"]
 CMD []
