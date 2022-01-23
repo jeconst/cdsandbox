@@ -133,7 +133,7 @@ module.exports = {
 
   overrides: [
     {
-      files: [".eslintrc.js"],
+      files: [".eslintrc.js", "jest.config.js"],
       parserOptions: {
         project: null,
       },
@@ -141,6 +141,14 @@ module.exports = {
         "@typescript-eslint/no-floating-promises": "off",
         "@typescript-eslint/no-var-requires": "off",
       },
+    },
+    {
+      files: ["src/tests/**/*"],
+      plugins: ["jest"],
+      parserOptions: {
+        ecmaVersion: 9,
+      },
+      extends: ["plugin:jest/recommended"],
     },
   ],
 };
