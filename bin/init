@@ -8,5 +8,5 @@ echo "Initializing infrastructure..."
 docker run --rm \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$PWD/infra/config.json:/infrah/config.json" \
-	--env-file .env \
+  --env-file .env \
   "cdsandbox-deployer:init" init
