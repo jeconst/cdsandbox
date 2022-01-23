@@ -107,6 +107,7 @@ module.exports = {
 
     "@typescript-eslint/indent": ["warn", 2, { "SwitchCase": 1 }],
     "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-inferrable-types": "warn",
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/member-delimiter-style": [
       "warn",
