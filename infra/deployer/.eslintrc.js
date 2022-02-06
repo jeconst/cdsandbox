@@ -51,6 +51,7 @@ module.exports = {
     "new-cap": "warn",
     "no-array-constructor": "error",
     "no-caller": "error",
+    "no-empty": "warn",
     "no-extend-native": "error",
     "no-extra-bind": "error",
     "no-invalid-this": "error",
