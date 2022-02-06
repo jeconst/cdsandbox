@@ -146,9 +146,6 @@ module.exports = {
     {
       files: ["src/tests/**/*"],
       plugins: ["jest"],
-      parserOptions: {
-        ecmaVersion: 9,
-      },
       extends: ["plugin:jest/recommended"],
     },
   ],
