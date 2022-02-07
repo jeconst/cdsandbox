@@ -1,4 +1,4 @@
-import { Deployer } from "../deployer";
+import { Deployer } from "../dist/core/deployer";
 
 import { TestEnvironment } from "./support/test-environment";
 

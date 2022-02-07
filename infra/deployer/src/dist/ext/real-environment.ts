@@ -1,4 +1,4 @@
-import { Environment } from "./environment";
+import { Environment } from "../core/environment";
 
 export function realEnvironment(): Environment {
   return {

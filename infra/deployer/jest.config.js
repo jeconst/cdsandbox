@@ -6,8 +6,12 @@ module.exports = {
 
   collectCoverage: false,
   collectCoverageFrom: [
-    "build/**/*.js",
-    "!build/coverage/**",
+    "build/dist/**/*.js",
+    "build/tests/support/**/*.js",
+
+    // Only covered by E2E tests:
+    "!build/dist/ext/**/*.js",
+    "!build/dist/index.js",
   ],
   coverageDirectory: "build/coverage",
   coverageReporters: ["clover", "json", "lcov", ["text", { skipFull: true }]],

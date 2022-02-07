@@ -1,6 +1,6 @@
 import * as stream from "stream";
 
-import { Environment } from "../../environment";
+import { Environment } from "../../dist/core/environment";
 
 class OutputStream extends stream.Writable {
   contents = "";

@@ -1,5 +1,5 @@
-import { Deployer } from "./deployer";
-import { realEnvironment } from "./real-environment";
+import { Deployer } from "./core/deployer";
+import { realEnvironment } from "./ext/real-environment";
 
 new Deployer(realEnvironment())
   .run(process.argv.slice(2))
