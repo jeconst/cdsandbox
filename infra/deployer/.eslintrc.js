@@ -81,7 +81,7 @@ module.exports = {
     "quote-props": ["warn", "consistent"],
     "quotes": ["warn", "double", { avoidEscape: true }],
     "rest-spread-spacing": "warn",
-    "semi": "error",
+    "semi": "warn",
     "semi-spacing": "warn",
     "space-before-blocks": "warn",
     "space-before-function-paren": ["warn", { asyncArrow: "always", anonymous: "never", named: "never" }],
