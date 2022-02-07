@@ -7,7 +7,7 @@ module.exports = {
   collectCoverage: false,
   collectCoverageFrom: [
     "build/dist/**/*.js",
-    "build/tests/support/**/*.js",
+    "build/tests/**/*.js",
 
     // Only covered by E2E tests:
     "!build/dist/ext/**/*.js",
