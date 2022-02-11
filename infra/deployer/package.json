@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf build && tsc",
+    "build": "rimraf 'build/*' && tsc",
     "test": "jest --coverage=true",
     "lint": "eslint --max-warnings=0 .",
-    "watch-build": "rimraf build && tsc --watch",
+    "watch-build": "rimraf 'build/*' && tsc --watch",
     "watch-test": "jest --watchAll --coverage=true",
     "all": "npm run build && npm run test && npm run lint"
   },

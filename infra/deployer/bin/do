@@ -1,6 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-image_id=$(docker build --target dev --build-arg "DEV_USER_ID=$(id -u)" --build-arg "DEV_GROUP_ID=$(id -g)" --quiet .)
+function build-dev-image {
+  docker build --target dev --build-arg "DEV_USER_ID=$(id -u)" --build-arg "DEV_GROUP_ID=$(id -g)" "$@" .
+}
 
-exec docker run -it --rm -v "$PWD:/deployer" "$image_id" "$@"
+if [ "${1-}" == "-v" ]; then
+  shift
+  build-dev-image
+fi
+
+image_id=$(build-dev-image --quiet)
+
+exec docker run -it --rm -v "$PWD/src:/deployer/src" -v "$PWD/build:/deployer/build" "$image_id" "$@"
