@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "build": "rimraf 'build/*' && tsc",
-    "test": "jest --coverage=true",
+    "test": "rimraf 'build/coverage' && jest",
+    "test-unit": "rimraf 'build/coverage/unit' && jest --config=jest.unit.config.js",
     "lint": "eslint --max-warnings=0 .",
     "watch-build": "rimraf 'build/*' && tsc --watch",
-    "watch-test": "jest --watchAll --coverage=true",
+    "watch-test": "rimraf 'build/coverage' && jest --watchAll",
+    "watch-test-unit": "rimraf 'build/coverage/unit' && jest --watchAll --config=jest.unit.config.js",
     "all": "npm run build && npm run test && npm run lint"
   },
   "author": "",
