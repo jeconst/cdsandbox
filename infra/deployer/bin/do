@@ -12,4 +12,9 @@ fi
 
 image_id=$(build-dev-image --quiet)
 
-exec docker run -it --rm -v "$PWD/src:/deployer/src" -v "$PWD/build:/deployer/build" "$image_id" "$@"
+exec docker run -it --rm \
+  -v "$PWD/src:/deployer/src" \
+  -v "$PWD/build:/deployer/build" \
+  -v "$PWD/package.json:/deployer/package.json" \
+  -v "$PWD/package-lock.json:/deployer/package-lock.json" \
+  "$image_id" "$@"
