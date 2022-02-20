@@ -7,6 +7,7 @@ module.exports = {
      // Note: <rootDir> doesn't seem to work here:
     "!**/build/tests/integration/**",
   ],
+  watchPathIgnorePatterns: ["<rootDir>/src/"],
 
   collectCoverage: true,
   collectCoverageFrom: [

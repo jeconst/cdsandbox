@@ -2,6 +2,7 @@ module.exports = {
   testEnvironment: "node",
 
   testMatch: ["<rootDir>/build/tests/**/*.test.js"],
+  watchPathIgnorePatterns: ["<rootDir>/src/"],
 
   collectCoverage: true,
   collectCoverageFrom: [
