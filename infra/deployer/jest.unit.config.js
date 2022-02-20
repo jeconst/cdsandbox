@@ -4,7 +4,7 @@ module.exports = {
   testMatch: [
     "<rootDir>/build/tests/**/*.test.js",
 
-     // Note: <rootDir> doesn't seem to work here:
+     // Note: <rootDir> doesn't seem to work here (as of Jest 27):
     "!**/build/tests/integration/**",
   ],
   watchPathIgnorePatterns: ["<rootDir>/src/"],
