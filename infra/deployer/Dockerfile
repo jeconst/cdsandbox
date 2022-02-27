@@ -21,7 +21,7 @@ USER dev
 COPY --chown=dev:dev package.json package-lock.json .
 RUN npm install
 
-COPY . .
+COPY --chown=dev:dev . .
 
 ENV PATH="/deployer/node_modules/.bin:${PATH}"
 
