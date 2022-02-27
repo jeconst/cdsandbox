@@ -12,6 +12,8 @@ fi
 
 image_id=$(build-dev-image --quiet)
 
+mkdir -p "$PWD/build"
+
 exec docker run -it --rm \
   -v "$PWD/src:/deployer/src" \
   -v "$PWD/build:/deployer/build" \
