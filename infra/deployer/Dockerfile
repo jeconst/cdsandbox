@@ -43,7 +43,7 @@ FROM base AS production
 COPY package.json package-lock.json .
 RUN npm ci --production
 
-COPY --from=build /deployer/build/dist /deployer/dist
+COPY --from=build /deployer/build/dist /deployer/build/dist
 
-ENTRYPOINT ["node", "/deployer/dist/index.js"]
+ENTRYPOINT ["node", "/deployer/build/dist/index.js"]
 CMD []
