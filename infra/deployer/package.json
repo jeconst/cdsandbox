@@ -1,8 +1,8 @@
 {
-  "name": "deployer",
-  "version": "1.0.0",
+  "name": "aws-ecs-deployer",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/dist/index.js",
   "scripts": {
     "build": "rimraf 'build/*' && tsc",
     "test": "rimraf 'build/coverage' && jest",

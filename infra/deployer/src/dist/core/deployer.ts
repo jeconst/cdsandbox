@@ -1,3 +1,5 @@
+import packageInfo from "../../../package.json";
+
 import { Environment } from "./environment";
 import { Output } from "./output";
 
@@ -20,6 +22,9 @@ export class Deployer {
     switch (commandName) {
       case "init":
         return await this.init();
+      case "info":
+        this.output.info(`${packageInfo.name} v${packageInfo.version}`);
+        return 0;
       default:
         this.output.error(`Invalid command: ${commandName}`);
         return 1;
