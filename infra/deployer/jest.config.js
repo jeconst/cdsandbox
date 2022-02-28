@@ -8,6 +8,10 @@ module.exports = {
   collectCoverageFrom: [
     "<rootDir>/build/dist/**/*.js",
     "<rootDir>/build/tests/**/*.js",
+
+    // Coverage not picked up since Jest doesn't support coverage for subprocesses:
+    // https://github.com/facebook/jest/issues/5274
+    "!<rootDir>/build/dist/bin.js",
   ],
   coverageDirectory: "<rootDir>/build/coverage/all",
   coverageReporters: ["clover", "json", "lcov", ["text", { skipFull: true }]],

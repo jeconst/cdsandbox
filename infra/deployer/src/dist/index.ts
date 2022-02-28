@@ -1,9 +1,7 @@
-import { Deployer } from "./core/deployer";
+import { Cli } from "./core/cli";
 import { realEnvironment } from "./ext/real-environment";
 
-new Deployer(realEnvironment())
-  .run(process.argv.slice(2))
-  .then(exitCode => {
-    process.exitCode = exitCode;
-  })
-  .catch(err => console.error(err));
+export async function runCli(args: string[]): Promise<number> {
+  const cli = new Cli(realEnvironment());
+  return await cli.run(args);
+}

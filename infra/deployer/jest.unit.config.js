@@ -14,10 +14,11 @@ module.exports = {
     "<rootDir>/build/dist/**/*.js",
     "<rootDir>/build/tests/**/*.js",
 
-    // Only covered by integration tests:
-    "!<rootDir>/build/tests/integration/**",
+    // Not covered by unit tests:
     "!<rootDir>/build/dist/ext/**",
+    "!<rootDir>/build/dist/bin.js",
     "!<rootDir>/build/dist/index.js",
+    "!<rootDir>/build/tests/integration/**",
   ],
   coverageDirectory: "<rootDir>/build/coverage/unit",
   coverageReporters: ["clover", "json", "lcov", ["text", { skipFull: true }]],

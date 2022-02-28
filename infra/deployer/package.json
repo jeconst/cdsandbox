@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "build/dist/index.js",
+  "bin": "build/dist/bin.js",
   "scripts": {
     "build": "rimraf 'build/*' && tsc",
     "test": "rimraf 'build/coverage' && jest",

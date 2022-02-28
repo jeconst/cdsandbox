@@ -1,11 +1,11 @@
 import { spawnSync } from "child_process";
 import path from "path";
 
-const projectRoot = path.join(__dirname, "../../..");
+const cliPath = path.join(__dirname, "../../../build/dist/bin.js");
 
-describe("CLI", () => {
+describe("CLI executable", () => {
   function runCli(...args: string[]) {
-    return spawnSync("node", [projectRoot, ...args]);
+    return spawnSync("node", [cliPath, ...args]);
   }
 
   describe("info", () => {
@@ -13,8 +13,8 @@ describe("CLI", () => {
       const result = runCli("info");
 
       expect(result.error).toBe(undefined);
-      expect(result.stdout.toString()).toBe("aws-ecs-deployer v0.1.0\n");
       expect(result.stderr.toString()).toBe("");
+      expect(result.stdout.toString()).toBe("aws-ecs-deployer v0.1.0\n");
       expect(result.status).toBe(0);
     });
   });

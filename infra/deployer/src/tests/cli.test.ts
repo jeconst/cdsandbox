@@ -1,19 +1,19 @@
-import { Deployer } from "../dist/core/deployer";
+import { Cli } from "../dist/core/cli";
 
 import { TestEnvironment } from "./support/test-environment";
 
-describe("Deployer", () => {
+describe("CLI", () => {
   let env: TestEnvironment;
-  let deployer: Deployer;
+  let cli: Cli;
 
   beforeEach(() => {
     env = new TestEnvironment();
-    deployer = new Deployer(env);
+    cli = new Cli(env);
   });
 
   describe("init", () => {
     it("prints a message", async () => {
-      const exitCode = await deployer.run(["init"]);
+      const exitCode = await cli.run(["init"]);
 
       expect(exitCode).toBe(0);
       expect(env.output()).toEqual("Initializing\n");
@@ -22,7 +22,7 @@ describe("Deployer", () => {
 
   describe("when not given a command", () => {
     it("prints an error and exits", async () => {
-      const exitCode = await deployer.run([]);
+      const exitCode = await cli.run([]);
 
       expect(exitCode).toBe(1);
       expect(env.output()).toEqual({ stderr: "No command specified\n" });
@@ -31,7 +31,7 @@ describe("Deployer", () => {
 
   describe("when given an unrecognized command", () => {
     it("prints an error and exits", async () => {
-      const exitCode = await deployer.run(["foobar"]);
+      const exitCode = await cli.run(["foobar"]);
 
       expect(exitCode).toBe(1);
       expect(env.output()).toEqual({ stderr: "Invalid command: foobar\n" });
