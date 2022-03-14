@@ -11,6 +11,15 @@ describe("CLI", () => {
     cli = new Cli(env);
   });
 
+  describe("info", () => {
+    it("prints the version", async () => {
+      const exitCode = await cli.run(["info"]);
+
+      expect(exitCode).toBe(0);
+      expect(env.output()).toMatch(/aws-ecs-deployer v\d+\.\d+\.\d+\n/);
+    });
+  });
+
   describe("init", () => {
     it("prints a message", async () => {
       const exitCode = await cli.run(["init"]);
