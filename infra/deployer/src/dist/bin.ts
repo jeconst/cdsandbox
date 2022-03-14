@@ -8,5 +8,6 @@ runCli(process.argv.slice(2))
   })
   .catch(err => {
     process.exitCode = 2;
+    console.error("Unexpected error!");
     console.error(err);
   });
