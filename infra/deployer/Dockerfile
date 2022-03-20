@@ -1,11 +1,11 @@
-FROM node:16.13-bullseye AS base
+FROM node:16.13-bullseye AS runtime
 
-WORKDIR /deployer
+WORKDIR /project
 
 RUN npm install -g npm@8.4.1
 
 ################################################################################
-FROM base AS dev
+FROM runtime AS dev
 
 # Allows the image to be built with a host user's uid/gid, so files written by
 # dev tooling (inside the mounted source directory) are owned by that host user
@@ -15,21 +15,19 @@ ARG DEV_USER_ID=10000
 ARG DEV_GROUP_ID=10000
 RUN groupadd --non-unique --gid ${DEV_GROUP_ID} dev && \
     useradd --non-unique --uid ${DEV_USER_ID} --gid dev dev && \
-    install --directory --owner dev --group dev /home/dev /deployer
+    install --directory --owner dev --group dev /home/dev /project
 USER dev
 
 COPY --chown=dev:dev package.json package-lock.json .
 RUN npm install
 
-COPY --chown=dev:dev . .
-
-ENV PATH="/deployer/node_modules/.bin:${PATH}"
+ENV PATH="/project/node_modules/.bin:${PATH}"
 
 ENTRYPOINT []
 CMD ["bash"]
 
 ################################################################################
-FROM base AS build
+FROM runtime AS build
 
 COPY package.json package-lock.json .
 RUN npm ci
@@ -38,12 +36,12 @@ COPY . .
 RUN npm run build
 
 ################################################################################
-FROM base AS production
+FROM runtime AS production
 
 COPY package.json package-lock.json .
 RUN npm ci --production
 
-COPY --from=build /deployer/build/dist /deployer/build/dist
+COPY --from=build /project/build/dist /project/build/dist
 
-ENTRYPOINT ["node", "/deployer/build/dist/index.js"]
+ENTRYPOINT ["node", "/project/build/dist/index.js"]
 CMD []
