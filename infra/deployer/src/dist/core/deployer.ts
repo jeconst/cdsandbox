@@ -1,11 +1,7 @@
-import { Environment } from "./environment";
 import { Output } from "./output";
 
 export class Deployer {
-  private readonly output: Output;
-
-  constructor(private readonly env: Environment) {
-    this.output = new Output(env.stdout, env.stderr);
+  constructor(private readonly output: Output) {
   }
 
   async init(): Promise<number> {

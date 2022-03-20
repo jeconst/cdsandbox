@@ -9,13 +9,12 @@ export class Cli {
   private readonly output: Output;
 
   constructor(env: Environment) {
-    this.deployer = new Deployer(env);
     this.output = new Output(env.stdout, env.stderr);
+    this.deployer = new Deployer(this.output);
   }
 
-  async run(args: string[]): Promise<number> {
-    args = args.slice();
-    const commandName = args.shift();
+  async run(args: readonly string[]): Promise<number> {
+    const commandName = args[0];
 
     if (!commandName) {
       this.output.error("No command specified");
