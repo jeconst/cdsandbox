@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+
+bin/do -v npm run develop

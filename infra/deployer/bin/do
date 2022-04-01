@@ -15,13 +15,14 @@ image_id=$(build-dev-image --quiet)
 mkdir -p "$PWD/build"
 
 exec docker run --rm -it \
-  -v "$PWD/src:/project/src" \
   -v "$PWD/build:/project/build" \
-  -v "$PWD/package.json:/project/package.json" \
-  -v "$PWD/package-lock.json:/project/package-lock.json" \
+  -v "$PWD/src:/project/src" \
   -v "$PWD/.eslintrc.js:/project/.eslintrc.js" \
   -v "$PWD/.gitignore:/project/.gitignore" \
+  -v "$PWD/develop.js:/project/develop.js" \
   -v "$PWD/jest.config.js:/project/jest.config.js" \
   -v "$PWD/jest.unit.config.js:/project/jest.unit.config.js" \
+  -v "$PWD/package-lock.json:/project/package-lock.json" \
+  -v "$PWD/package.json:/project/package.json" \
   -v "$PWD/tsconfig.json:/project/tsconfig.json" \
   "$image_id" "$@"
