@@ -11,18 +11,20 @@ function main() {
     ts.sys,
     ts.createSemanticDiagnosticsBuilderProgram,
     reportDiagnostic,
-    reportWatchStatusChanged,
+    reportDiagnostic,
   );
 
   ts.createWatchProgram(host);
 }
 
 function reportDiagnostic(diagnostic) {
-  console.log("diagnostic", diagnostic);
-}
+  const formatDiagnosticHost = {
+    getCanonicalFileName: path => path,
+    getCurrentDirectory: ts.sys.getCurrentDirectory,
+    getNewLine: () => ts.sys.newLine,
+  };
 
-function reportWatchStatusChanged(diagnostic) {
-  console.log("watchStatusChanged", diagnostic);
+  process.stdout.write(ts.formatDiagnostic(diagnostic, formatDiagnosticHost));
 }
 
 main();
