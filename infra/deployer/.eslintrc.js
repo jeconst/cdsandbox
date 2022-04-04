@@ -59,7 +59,7 @@ module.exports = {
     "no-mixed-spaces-and-tabs": "error",
     "no-multi-spaces": "warn",
     "no-multi-str": "error",
-    "no-multiple-empty-lines": ["warn", { max: 2 }],
+    "no-multiple-empty-lines": ["warn", { max: 1, maxBOF: 0, maxEOF: 0 }],
     "no-new-object": "error",
     "no-new-symbol": "error",
     "no-new-wrappers": "error",
