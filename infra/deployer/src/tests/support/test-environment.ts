@@ -12,6 +12,11 @@ class OutputStream extends stream.Writable {
   }
 }
 
+export type TerminalOutput =
+  | string
+  | { stderr: string }
+  | { stdout: string, stderr: string }
+
 export class TestEnvironment implements Environment {
   stdout: OutputStream;
   stderr: OutputStream;
@@ -21,7 +26,7 @@ export class TestEnvironment implements Environment {
     this.stderr = new OutputStream();
   }
 
-  output(): string | { stderr: string } | { stdout: string, stderr: string } {
+  output(): TerminalOutput {
     if (!this.stderr.contents) {
       return this.stdout.contents;
     }

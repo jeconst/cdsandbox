@@ -148,6 +148,9 @@ module.exports = {
       files: ["src/tests/**/*"],
       plugins: ["jest"],
       extends: ["plugin:jest/recommended"],
+      rules: {
+        "jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "testCli"] }],
+      },
     },
   ],
 };
