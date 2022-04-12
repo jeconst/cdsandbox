@@ -1,6 +1,6 @@
 import { Cli } from "../../dist/core/cli";
 
-import { TestEnvironment } from "./test-environment";
+import { TestHost } from "./test-host";
 
 type stringMatcher = string | RegExp;
 
@@ -16,16 +16,16 @@ export interface TestCliOptions {
 }
 
 export async function testCli(options: TestCliOptions): Promise<void> {
-  const env = new TestEnvironment;
-  const cli = new Cli(env);
+  const host = new TestHost;
+  const cli = new Cli(host);
 
   const exitCode = await cli.run(options.args);
 
   expect(exitCode).toEqual(options.expectedExitCode);
 
   if (typeof options.expectedOutput === "string" || options.expectedOutput instanceof RegExp) {
-    expect(env.output()).toMatch(options.expectedOutput);
+    expect(host.output()).toMatch(options.expectedOutput);
   } else {
-    expect(env.output()).toMatchObject(options.expectedOutput);
+    expect(host.output()).toMatchObject(options.expectedOutput);
   }
 }

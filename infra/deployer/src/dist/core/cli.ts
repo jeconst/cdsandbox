@@ -1,15 +1,15 @@
 import packageInfo from "../../../package.json";
 
 import { Deployer } from "./deployer";
-import { Environment } from "./environment";
+import { Host } from "./host";
 import { Output } from "./output";
 
 export class Cli {
   private readonly deployer: Deployer;
   private readonly output: Output;
 
-  constructor(env: Environment) {
-    this.output = new Output(env.stdout, env.stderr);
+  constructor(host: Host) {
+    this.output = new Output(host.stdout, host.stderr);
     this.deployer = new Deployer(this.output);
   }
 
@@ -33,4 +33,3 @@ export class Cli {
     }
   }
 }
-

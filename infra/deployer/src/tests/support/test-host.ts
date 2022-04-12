@@ -1,6 +1,6 @@
 import * as stream from "stream";
 
-import { Environment } from "../../dist/core/environment";
+import { Host } from "../../dist/core/host";
 
 class OutputStream extends stream.Writable {
   contents = "";
@@ -17,7 +17,7 @@ export type TerminalOutput =
   | { stderr: string }
   | { stdout: string, stderr: string }
 
-export class TestEnvironment implements Environment {
+export class TestHost implements Host {
   stdout: OutputStream;
   stderr: OutputStream;
 
