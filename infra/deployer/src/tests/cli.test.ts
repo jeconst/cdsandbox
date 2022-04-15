@@ -1,8 +1,13 @@
-import { testCli } from "./support/cli-testing";
+import { TestHost } from "./support/test-host";
+
+let host: TestHost;
+beforeEach(() => {
+  host = new TestHost();
+});
 
 describe("CLI", () => {
   describe("info", () => {
-    it("prints the version", () => testCli({
+    it("prints the version", () => host.testCli({
       args: ["info"],
       expectedExitCode: 0,
       expectedOutput: /aws-ecs-deployer v\d+\.\d+\.\d+\n/,
@@ -10,7 +15,7 @@ describe("CLI", () => {
   });
 
   describe("init", () => {
-    it("prints a message", () => testCli({
+    it("prints a message", () => host.testCli({
       args: ["init"],
       expectedExitCode: 0,
       expectedOutput: "Initializing\n",
@@ -18,7 +23,7 @@ describe("CLI", () => {
   });
 
   describe("when not given a command", () => {
-    it("prints an error and exits", () => testCli({
+    it("prints an error and exits", () => host.testCli({
       args: [],
       expectedExitCode: 1,
       expectedOutput: { stderr: "No command specified\n" },
@@ -26,7 +31,7 @@ describe("CLI", () => {
   });
 
   describe("when given an unrecognized command", () => {
-    it("prints an error and exits", () => testCli({
+    it("prints an error and exits", () => host.testCli({
       args: ["foobar"],
       expectedExitCode: 1,
       expectedOutput: { stderr: "Invalid command: foobar\n" },
