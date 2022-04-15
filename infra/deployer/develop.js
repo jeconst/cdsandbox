@@ -3,7 +3,7 @@ const path = require("path");
 const ts = require("typescript");
 
 function main() {
-  const tsConfigPath = path.resolve("tsconfig.json")
+  const tsConfigPath = path.resolve("tsconfig.json");
 
   const host = ts.createWatchCompilerHost(
     tsConfigPath,

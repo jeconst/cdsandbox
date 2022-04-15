@@ -132,7 +132,6 @@ module.exports = {
     }],
   },
 
-
   overrides: [
     {
       files: [".eslintrc.js", "develop.js", "jest.config.js", "jest.unit.config.js"],
