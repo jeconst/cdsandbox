@@ -1,8 +1,10 @@
-import { Host } from "../core/host";
+import { ProcessHost } from "../core/host";
 
-export function getSystemHost(): Host {
+export function getSystemHost(): ProcessHost {
   return {
-    stdout: process.stdout,
-    stderr: process.stderr,
+    terminal: {
+      stdout: process.stdout,
+      stderr: process.stderr,
+    },
   };
 }

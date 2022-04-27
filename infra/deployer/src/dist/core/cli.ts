@@ -1,15 +1,15 @@
 import packageInfo from "../../../package.json";
 
 import { Deployer } from "./deployer";
-import { Host } from "./host";
+import { ProcessHost } from "./host";
 import { Output } from "./output";
 
 export class Cli {
   private readonly deployer: Deployer;
   private readonly output: Output;
 
-  constructor(host: Host) {
-    this.output = new Output(host.stdout, host.stderr);
+  constructor(host: ProcessHost) {
+    this.output = new Output(host.terminal.stdout, host.terminal.stderr);
     this.deployer = new Deployer(this.output);
   }
 
