@@ -1,7 +1,7 @@
-import { Cli } from "./core/cli";
+import { Program } from "./core/program";
 import { getSystemHost } from "./ext/system-host";
 
-export async function runCli(args: string[]): Promise<number> {
-  const cli = new Cli(getSystemHost());
-  return await cli.run(args);
+export async function runProgram(args: string[]): Promise<number> {
+  const program = new Program(getSystemHost());
+  return await program.run(args);
 }

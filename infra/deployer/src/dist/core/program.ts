@@ -4,7 +4,7 @@ import { Deployer } from "./deployer";
 import { ProcessHost } from "./host";
 import { Output } from "./output";
 
-export class Cli {
+export class Program {
   private readonly deployer: Deployer;
   private readonly output: Output;
 

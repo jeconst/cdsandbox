@@ -1,6 +1,6 @@
 import { AwsState } from "../../dist/core/aws";
-import { Cli } from "../../dist/core/cli";
 import { ProcessHost } from "../../dist/core/host";
+import { Program } from "../../dist/core/program";
 
 import { FakeAws } from "./fake-aws";
 import { FakeTerminal } from "./fake-terminal";
@@ -11,7 +11,7 @@ export type TerminalOutputMatcher =
   | { stderr: stringMatcher }
   | { stdout: stringMatcher, stderr: stringMatcher }
 
-export interface TestCliOptions {
+export interface TestProgramOptions {
   args: string[];
   expectedExitCode: number;
   expectedOutput: TerminalOutputMatcher;
@@ -21,12 +21,12 @@ export interface TestCliOptions {
 export class TestHost {
   private readonly aws = new FakeAws();
 
-  async testCli(options: TestCliOptions): Promise<void> {
+  async testProgram(options: TestProgramOptions): Promise<void> {
     const terminal = new FakeTerminal();
     const host: ProcessHost = { terminal };
-    const cli = new Cli(host);
+    const program = new Program(host);
 
-    const exitCode = await cli.run(options.args);
+    const exitCode = await program.run(options.args);
 
     expect(exitCode).toEqual(options.expectedExitCode);
 

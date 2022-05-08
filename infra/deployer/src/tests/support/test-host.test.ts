@@ -1,11 +1,11 @@
 import { TestHost } from "./test-host";
 
 describe("TestHost", () => {
-  describe("testCli", () => {
+  describe("testProgram", () => {
     it("validates the exit code", async () => {
       const host = new TestHost();
 
-      const test = host.testCli({
+      const test = host.testProgram({
         args: ["invalid"],
         expectedExitCode: 0,
         expectedOutput: "",
@@ -19,7 +19,7 @@ describe("TestHost", () => {
     it("validates the output", async () => {
       const host = new TestHost();
 
-      const test = host.testCli({
+      const test = host.testProgram({
         args: ["info"],
         expectedExitCode: 0,
         expectedOutput: "Yada yada",

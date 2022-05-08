@@ -148,7 +148,7 @@ module.exports = {
       plugins: ["jest"],
       extends: ["plugin:jest/recommended"],
       rules: {
-        "jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "host.testCli"] }],
+        "jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "host.testProgram"] }],
       },
       overrides: [
         {

@@ -1,16 +1,16 @@
 import { spawnSync } from "child_process";
 import path from "path";
 
-const cliPath = path.join(__dirname, "../../../build/dist/bin.js");
+const programPath = path.join(__dirname, "../../../build/dist/bin.js");
 
-describe("CLI executable", () => {
-  function runCli(...args: string[]) {
-    return spawnSync("node", [cliPath, ...args]);
+describe("program executable", () => {
+  function runProgram(...args: string[]) {
+    return spawnSync("node", [programPath, ...args]);
   }
 
   describe("info", () => {
     it("prints information about the deployer", () => {
-      const result = runCli("info");
+      const result = runProgram("info");
 
       expect(result.error).toBe(undefined);
       expect(result.stderr.toString()).toBe("");

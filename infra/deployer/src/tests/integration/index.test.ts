@@ -1,8 +1,8 @@
-import { runCli } from "../../dist/index";
+import { runProgram } from "../../dist/index";
 
-describe("runCli", () => {
-  it("runs the CLI with the given arguments", async () => {
-    const exitCode = await runCli(["info"]);
+describe("runProgram", () => {
+  it("runs the program with the given arguments", async () => {
+    const exitCode = await runProgram(["info"]);
     expect(exitCode).toBe(0);
   });
 });

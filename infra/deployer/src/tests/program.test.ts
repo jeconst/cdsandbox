@@ -7,7 +7,7 @@ beforeEach(() => {
 
 describe("CLI", () => {
   describe("info", () => {
-    it("prints the version", () => host.testCli({
+    it("prints the version", () => host.testProgram({
       args: ["info"],
       expectedExitCode: 0,
       expectedOutput: /aws-ecs-deployer v\d+\.\d+\.\d+\n/,
@@ -16,7 +16,7 @@ describe("CLI", () => {
 
   describe("init", () => {
     it.todo("initializes the ECR repository");
-    it("prints a message", () => host.testCli({
+    it("prints a message", () => host.testProgram({
       args: ["init"],
       expectedExitCode: 0,
       expectedOutput: "Initializing\n",
@@ -27,7 +27,7 @@ describe("CLI", () => {
   });
 
   describe("when not given a command", () => {
-    it("prints an error and exits", () => host.testCli({
+    it("prints an error and exits", () => host.testProgram({
       args: [],
       expectedExitCode: 1,
       expectedOutput: { stderr: "No command specified\n" },
@@ -35,7 +35,7 @@ describe("CLI", () => {
   });
 
   describe("when given an unrecognized command", () => {
-    it("prints an error and exits", () => host.testCli({
+    it("prints an error and exits", () => host.testProgram({
       args: ["foobar"],
       expectedExitCode: 1,
       expectedOutput: { stderr: "Invalid command: foobar\n" },
