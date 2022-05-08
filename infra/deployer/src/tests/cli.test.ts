@@ -15,10 +15,15 @@ describe("CLI", () => {
   });
 
   describe("init", () => {
-    it("prints a message", () => host.testCli({
+    it("initializes the ECR repository", () => host.testCli({
       args: ["init"],
       expectedExitCode: 0,
       expectedOutput: "Initializing\n",
+      expectedAwsState: {
+        ecr: {
+          "myapp": [],
+        },
+      },
     }));
   });
 
