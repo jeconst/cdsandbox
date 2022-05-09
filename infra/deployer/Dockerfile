@@ -2,7 +2,7 @@ FROM node:16.13-bullseye AS runtime
 
 WORKDIR /project
 
-RUN npm install -g npm@8.4.1
+RUN npm install -g npm@8.9.0
 
 ################################################################################
 FROM runtime AS dev
