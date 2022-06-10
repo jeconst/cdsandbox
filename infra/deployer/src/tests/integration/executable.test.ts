@@ -4,13 +4,13 @@ import path from "path";
 const programPath = path.join(__dirname, "../../../build/dist/bin.js");
 
 describe("program executable", () => {
-  function runProgram(...args: string[]) {
-    return spawnSync("node", [programPath, ...args]);
+  function runProgram(input: string) {
+    return spawnSync("node", [programPath], { input: input });
   }
 
   describe("info", () => {
     it("prints information about the deployer", () => {
-      const result = runProgram("info");
+      const result = runProgram('{ "command": "info" }');
 
       expect(result.error).toBe(undefined);
       expect(result.stderr.toString()).toBe("");

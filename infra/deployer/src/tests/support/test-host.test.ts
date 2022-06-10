@@ -6,7 +6,7 @@ describe("TestHost", () => {
       const host = new TestHost();
 
       const test = host.testProgram({
-        args: ["invalid"],
+        input: { command: "invalid" },
         expectedExitCode: 0,
         expectedOutput: "",
       });
@@ -20,7 +20,7 @@ describe("TestHost", () => {
       const host = new TestHost();
 
       const test = host.testProgram({
-        args: ["info"],
+        input: { command: "info" },
         expectedExitCode: 0,
         expectedOutput: "Yada yada",
       });

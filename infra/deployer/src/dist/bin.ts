@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { runProgram } from "./index";
+import { run } from "./index";
 
-runProgram(process.argv.slice(2))
+run()
   .then(exitCode => {
     process.exitCode = exitCode;
   })

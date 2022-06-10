@@ -1,6 +1,6 @@
 import { AwsState } from "../../dist/core/aws";
 import { ProcessHost } from "../../dist/core/host";
-import { Program } from "../../dist/core/program";
+import { runProgram } from "../../dist/core/program";
 
 import { FakeAws } from "./fake-aws";
 import { FakeTerminal } from "./fake-terminal";
@@ -11,8 +11,9 @@ export type TerminalOutputMatcher =
   | { stderr: stringMatcher }
   | { stdout: stringMatcher, stderr: stringMatcher }
 
-export interface TestProgramOptions {
-  args: string[];
+export type TestProgramOptions = {
+  input?: object;
+  rawInput?: string;
   expectedExitCode: number;
   expectedOutput: TerminalOutputMatcher;
   expectedAwsState?: AwsState;
@@ -24,10 +25,19 @@ export class TestHost {
   async testProgram(options: TestProgramOptions): Promise<void> {
     const terminal = new FakeTerminal();
     const host: ProcessHost = { terminal };
-    const program = new Program(host);
 
-    const exitCode = await program.run(options.args);
+    const programRun = runProgram(host);
 
+    if (options.input !== undefined) {
+      const inputJson = JSON.stringify(options.input);
+      terminal.stdin.write(inputJson + "\n");
+    } else if (options.rawInput !== undefined) {
+      terminal.stdin.write(options.rawInput);
+    }
+
+    terminal.stdin.end();
+
+    const exitCode = await programRun;
     expect(exitCode).toEqual(options.expectedExitCode);
 
     if (typeof options.expectedOutput === "string" || options.expectedOutput instanceof RegExp) {

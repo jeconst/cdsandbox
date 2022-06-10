@@ -18,10 +18,12 @@ export type TerminalOutput =
   | { stdout: string, stderr: string }
 
 export class FakeTerminal implements Terminal {
+  stdin: stream.PassThrough;
   stdout: OutputStream;
   stderr: OutputStream;
 
   constructor() {
+    this.stdin = new stream.PassThrough({ encoding: "utf8" });
     this.stdout = new OutputStream();
     this.stderr = new OutputStream();
   }
