@@ -14,14 +14,14 @@ describe("init command", () => {
       },
     },
     env: {
-      AWS_REGION: "us-east-2",
       AWS_ACCESS_KEY_ID: "TEST-KEY-ID",
       AWS_SECRET_ACCESS_KEY: "TEST-SECRET-KEY",
       AWS_SESSION_TOKEN: "TEST-SESSION-TOKEN",
+      AWS_REGION: "mars-2",
     },
     expectedExitCode: 0,
     expectedOutput: `Initializing ECS deployment for 'my-cool-project'
-Connected to AWS account 12345678 (Test Account), region us-east-2
+Connected to AWS account 12345678 (Test Account), region mars-2
 Creating ECR repository 'my-cool-project'
 Creating ECR repository 'my-cool-project-test'
 Initialization complete!

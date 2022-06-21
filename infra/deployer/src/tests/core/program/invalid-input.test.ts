@@ -34,7 +34,7 @@ describe("invalid input handling", () => {
     it("prints an error and exits", () => host.testProgram({
       rawInput: "{}",
       expectedExitCode: 1,
-      expectedOutput: { stderr: "Expected object to have `command`\n" },
+      expectedOutput: { stderr: "Expected object to have 'command'\n" },
     }));
   });
 
@@ -42,7 +42,20 @@ describe("invalid input handling", () => {
     it("prints an error and exits", () => host.testProgram({
       rawInput: '{ "command": 123 }',
       expectedExitCode: 1,
-      expectedOutput: { stderr: "Expected command to be a string\n" },
+      expectedOutput: { stderr: "Expected 'command' to be a string\n" },
+    }));
+  });
+
+  describe("when given an object with invalid nested properties", () => {
+    it("prints an error and exits", () => host.testProgram({
+      input: {
+        command: "init",
+        config: {
+          projectName: false,
+        },
+      },
+      expectedExitCode: 1,
+      expectedOutput: { stderr: "Expected 'config.projectName' to be a string\n" },
     }));
   });
 
