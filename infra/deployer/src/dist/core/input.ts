@@ -2,9 +2,14 @@ import { Readable } from "stream";
 
 import { LineReader } from "./line-reader";
 
-export type Command =
-  | { command: "info" }
-  | { command: "init" }
+export type CommandConfig = unknown
+
+export type InfoCommand = { command: "info" }
+
+export type DeploymentCommand =
+  | { command: "init", config: CommandConfig }
+
+export type Command = InfoCommand | DeploymentCommand
 
 export class InputError extends Error {
   constructor(message: string) {
@@ -60,7 +65,7 @@ function parseCommand(json: string): Command {
   if (parsed.command === "info") {
     return { command: "info" };
   } else if (parsed.command === "init") {
-    return { command: "init" };
+    return { command: "init", config: "TODO" };
   } else {
     throw new InputError(`Invalid command: ${parsed.command}`);
   }

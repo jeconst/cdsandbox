@@ -1,6 +1,6 @@
-import { ProcessHost } from "../core/host";
+import { Host } from "../core/host";
 
-export function getSystemHost(): ProcessHost {
+export function getSystemHost(): Host {
   return {
     terminal: {
       stdin: process.stdin,

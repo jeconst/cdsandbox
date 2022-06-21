@@ -6,6 +6,6 @@ export interface Terminal {
   stderr: stream.Writable;
 }
 
-export interface ProcessHost {
+export interface Host {
   terminal: Terminal;
 }

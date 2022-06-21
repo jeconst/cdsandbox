@@ -1,19 +1,19 @@
+import { strict as assert } from "assert";
+
 import packageInfo from "../../../package.json";
 
 import { Deployer } from "./deployer";
-import { ProcessHost } from "./host";
+import { Host } from "./host";
 import { Input, Command, InputError } from "./input";
 import { Output } from "./output";
 
-export async function runProgram(host: ProcessHost): Promise<number> {
+export async function runProgram(host: Host): Promise<number> {
   const input = new Input(host.terminal.stdin);
   const output = new Output(host.terminal.stdout, host.terminal.stderr);
-  const deployer = new Deployer(output);
-  const context = { output, deployer };
 
   try {
     const command = await input.readCommand();
-    await processCommand(command, context);
+    await processCommand(command, host, output);
     return 0;
   } catch (err) {
     if (err instanceof InputError) {
@@ -26,15 +26,13 @@ export async function runProgram(host: ProcessHost): Promise<number> {
   }
 }
 
-type CommandContext = {
-  deployer: Deployer;
-  output: Output;
-};
-
-async function processCommand(command: Command, { deployer, output }: CommandContext) {
-  if (command.command === "init") {
-    await deployer.init();
-  } else if (command.command === "info") {
+async function processCommand(command: Command, host: Host, output: Output) {
+  if (command.command === "info") {
     output.info(`${packageInfo.name} v${packageInfo.version}`);
+  } else {
+    const deployer = new Deployer(output);
+
+    assert.equal(command.command, "init");
+    await deployer.init();
   }
 }
