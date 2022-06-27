@@ -27,7 +27,7 @@ async function processCommand(command: Command, host: Host, output: Output) {
   if (command.command === "info") {
     output.info(`${packageInfo.name} v${packageInfo.version}`);
   } else {
-    const deployer = new Deployer(output, command.config);
+    const deployer = new Deployer(host.aws, command.config, output);
 
     assert.equal(command.command, "init");
     await deployer.init();

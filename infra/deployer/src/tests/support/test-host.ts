@@ -25,7 +25,7 @@ export class TestHost {
 
   async testProgram(options: TestProgramOptions): Promise<void> {
     const terminal = new FakeTerminal();
-    const host: Host = { terminal };
+    const host: Host = { aws: this.aws, terminal };
 
     const programRun = runProgram(host);
 
