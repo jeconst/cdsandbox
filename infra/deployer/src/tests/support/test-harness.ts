@@ -1,8 +1,8 @@
-import { AwsState } from "../../dist/core/aws";
-import { Host } from "../../dist/core/host";
+import { AwsClient } from "../../dist/core/aws-client";
+import { Host, Terminal } from "../../dist/core/host";
 import { runProgram } from "../../dist/core/program";
 
-import { FakeAws } from "./fake-aws";
+import { FakeAwsClient, AwsState, initialAwsState } from "./fake-aws";
 import { FakeTerminal } from "./fake-terminal";
 
 type stringMatcher = string | RegExp;
@@ -20,12 +20,24 @@ export type TestProgramOptions = {
   expectedAwsState?: AwsState;
 }
 
-export class TestHost {
-  private readonly aws = new FakeAws();
+class TestProcessHost implements Host {
+  constructor(
+    public readonly terminal: Terminal,
+    private readonly env: Record<string, string> = {},
+    private readonly awsState: AwsState,
+  ) {}
+
+  getAwsClient(): AwsClient {
+    return new FakeAwsClient(this.awsState, this.env);
+  }
+}
+
+export class TestHarness {
+  private readonly awsState = initialAwsState();
 
   async testProgram(options: TestProgramOptions): Promise<void> {
     const terminal = new FakeTerminal();
-    const host: Host = { aws: this.aws, terminal };
+    const host = new TestProcessHost(terminal, options.env, this.awsState);
 
     const programRun = runProgram(host);
 
@@ -50,7 +62,13 @@ export class TestHost {
     }
 
     if (options.expectedAwsState) {
-      expect(this.aws.getState()).toMatchObject(options.expectedAwsState);
+      expect(this.getAwsState()).toMatchObject(options.expectedAwsState);
     }
+  }
+
+  private getAwsState() {
+    return {
+      ecr: {},
+    };
   }
 }

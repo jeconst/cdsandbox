@@ -1,12 +1,12 @@
-import { TestHost } from "../../support/test-host";
+import { TestHarness } from "../../support/test-harness";
 
-let host: TestHost;
+let harness: TestHarness;
 beforeEach(() => {
-  host = new TestHost();
+  harness = new TestHarness();
 });
 
 describe("info command", () => {
-  it("prints the version", () => host.testProgram({
+  it("prints the version", () => harness.testProgram({
     input: { command: "info" },
     expectedExitCode: 0,
     expectedOutput: /aws-ecs-deployer v\d+\.\d+\.\d+\n/,

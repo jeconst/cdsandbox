@@ -1,15 +1,19 @@
-import { Aws as AwsInterface, AwsState, AwsConnectionInfo } from "../core/aws";
+import { AwsCallerIdentity, AwsClient } from "../core/aws-client";
 
-export class Aws implements AwsInterface {
-  getState(): AwsState {
-    throw new Error("Method not implemented.");
+export class RealAwsClient implements AwsClient {
+  readonly region: string;
+
+  constructor() {
+    const region = process.env["AWS_REGION"];
+
+    if (!region) {
+      throw new Error("AWS_REGION environment variable is not set.");
+    }
+
+    this.region = region;
   }
 
-  getConnectionInfo(): AwsConnectionInfo {
-    throw new Error("Method not implemented.");
-  }
-
-  createEcrRepository(name: string): void {
+  getCallerIdentity(): AwsCallerIdentity {
     throw new Error("Method not implemented.");
   }
 }

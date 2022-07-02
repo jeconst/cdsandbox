@@ -1,23 +1,29 @@
-import { Aws, AwsConnectionInfo, AwsState } from "../../dist/core/aws";
+import { AwsCallerIdentity, AwsClient } from "../../dist/core/aws-client";
 
-export class FakeAws implements Aws {
-  private state: AwsState = {
-    ecr: {},
-  };
+export interface AwsState {
+  ecr: Record<string, Array<object>>;
+}
 
-  getState(): AwsState {
-    return this.state;
+export function initialAwsState() {
+  return { ecr: {} };
+}
+
+export class FakeAwsClient implements AwsClient {
+  readonly region: string;
+
+  constructor(private readonly state: AwsState, env: Record<string, string>) {
+    const region = env["AWS_REGION"];
+
+    if (!region) {
+      throw new Error("AWS_REGION environment variable is not set.");
+    }
+
+    this.region = region;
   }
 
-  getConnectionInfo(): AwsConnectionInfo {
+  getCallerIdentity(): AwsCallerIdentity {
     return {
-      accountId: "12345678",
-      accountName: "Test Account",
-      region: "mars-2",
+      account: "2345678",
     };
-  }
-
-  createEcrRepository(name: string): void {
-    this.state.ecr[name] = [];
   }
 }

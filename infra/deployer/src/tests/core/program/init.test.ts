@@ -1,12 +1,12 @@
-import { TestHost } from "../../support/test-host";
+import { TestHarness } from "../../support/test-harness";
 
-let host: TestHost;
+let harness: TestHarness;
 beforeEach(() => {
-  host = new TestHost();
+  harness = new TestHarness();
 });
 
 describe("init command", () => {
-  it("initializes the ECR repository", () => host.testProgram({
+  it("initializes the ECR repository", () => harness.testProgram({
     input: {
       command: "init",
       config: {
@@ -21,7 +21,7 @@ describe("init command", () => {
     },
     expectedExitCode: 0,
     expectedOutput: `Initializing ECS deployment for 'my-cool-project'
-Connected to AWS account 12345678 (Test Account), region mars-2
+Connected to AWS account 12345678, region mars-2
 Creating ECR repository 'my-cool-project'
 Creating ECR repository 'my-cool-project-test'
 Initialization complete!

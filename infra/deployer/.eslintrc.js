@@ -148,11 +148,11 @@ module.exports = {
       plugins: ["jest"],
       extends: ["plugin:jest/recommended"],
       rules: {
-        "jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "host.testProgram"] }],
+        "jest/expect-expect": ["warn", { "assertFunctionNames": ["expect", "harness.testProgram"] }],
       },
       overrides: [
         {
-          files: ["src/tests/support/test-host.ts"],
+          files: ["src/tests/support/test-harness.ts"],
           rules: {
             "jest/no-standalone-expect": "off",
           },

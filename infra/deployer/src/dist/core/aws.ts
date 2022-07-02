@@ -1,15 +1,19 @@
-export interface AwsConnectionInfo {
-  accountId: string;
-  accountName: string;
-  region: string;
-}
+import { AwsClient } from "./aws-client";
 
-export interface AwsState {
-  ecr: Record<string, Array<object>>;
-}
+export class Aws {
+  constructor(private readonly client: AwsClient) {
+  }
 
-export interface Aws {
-  getState(): AwsState;
-  getConnectionInfo(): AwsConnectionInfo;
-  createEcrRepository(name: string): void;
+  get region(): string {
+    return this.client.region;
+  }
+
+  getAccountId(): string {
+    const callerIdentity = this.client.getCallerIdentity();
+    return callerIdentity.account;
+  }
+
+  createEcrRepository(name: string): void {
+    throw new Error("TODO");
+  }
 }

@@ -1,6 +1,6 @@
 import * as stream from "stream";
 
-import { Aws } from "./aws";
+import { AwsClient } from "./aws-client";
 
 export interface Terminal {
   stdin: stream.Readable;
@@ -9,6 +9,6 @@ export interface Terminal {
 }
 
 export interface Host {
-  aws: Aws;
   terminal: Terminal;
+  getAwsClient(): AwsClient;
 }
