@@ -1,4 +1,14 @@
-import { AwsClient } from "./aws-client";
+export interface AwsCallerIdentity {
+  account: string;
+}
+
+export interface AwsClient {
+  readonly region: string;
+
+  getStsCallerIdentity(): AwsCallerIdentity;
+
+  createEcrRepository(options: { repositoryName: string }): void;
+}
 
 export class Aws {
   constructor(private readonly client: AwsClient) {
@@ -9,11 +19,13 @@ export class Aws {
   }
 
   getAccountId(): string {
-    const callerIdentity = this.client.getCallerIdentity();
+    const callerIdentity = this.client.getStsCallerIdentity();
     return callerIdentity.account;
   }
 
   createEcrRepository(name: string): void {
-    throw new Error("TODO");
+    this.client.createEcrRepository({
+      repositoryName: name,
+    });
   }
 }

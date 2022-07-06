@@ -1,4 +1,4 @@
-import { AwsCallerIdentity, AwsClient } from "../core/aws-client";
+import { AwsCallerIdentity, AwsClient } from "../core/aws";
 
 export class RealAwsClient implements AwsClient {
   readonly region: string;
@@ -13,7 +13,11 @@ export class RealAwsClient implements AwsClient {
     this.region = region;
   }
 
-  getCallerIdentity(): AwsCallerIdentity {
-    throw new Error("Method not implemented.");
+  getStsCallerIdentity(): AwsCallerIdentity {
+    throw new Error("TODO");
+  }
+
+  createEcrRepository(options: { repositoryName: string }): void {
+    throw new Error("TODO");
   }
 }

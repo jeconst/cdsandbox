@@ -1,5 +1,5 @@
 import { Aws } from "./aws";
-import { AwsClient } from "./aws-client";
+import { AwsClient } from "./aws";
 import { CommandConfig } from "./input";
 import { Output } from "./output";
 

@@ -1,6 +1,6 @@
 import * as stream from "stream";
 
-import { AwsClient } from "./aws-client";
+import { AwsClient } from "./aws";
 
 export interface Terminal {
   stdin: stream.Readable;

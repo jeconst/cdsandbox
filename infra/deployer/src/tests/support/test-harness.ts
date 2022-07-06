@@ -1,4 +1,4 @@
-import { AwsClient } from "../../dist/core/aws-client";
+import { AwsClient } from "../../dist/core/aws";
 import { Host, Terminal } from "../../dist/core/host";
 import { runProgram } from "../../dist/core/program";
 
@@ -67,8 +67,6 @@ export class TestHarness {
   }
 
   private getAwsState() {
-    return {
-      ecr: {},
-    };
+    return this.awsState;
   }
 }

@@ -1,4 +1,4 @@
-import { AwsCallerIdentity, AwsClient } from "../../dist/core/aws-client";
+import { AwsCallerIdentity, AwsClient } from "../../dist/core/aws";
 
 export interface AwsState {
   ecr: Record<string, Array<object>>;
@@ -21,9 +21,13 @@ export class FakeAwsClient implements AwsClient {
     this.region = region;
   }
 
-  getCallerIdentity(): AwsCallerIdentity {
+  getStsCallerIdentity(): AwsCallerIdentity {
     return {
-      account: "2345678",
+      account: "12345678",
     };
+  }
+
+  createEcrRepository(options: { repositoryName: string }): void {
+    this.state.ecr[options.repositoryName] = [];
   }
 }
