@@ -14,6 +14,10 @@ image_id=$(build-dev-image --quiet)
 
 mkdir -p "$PWD/build"
 
+if [ ! -e "$PWD/local-dev.env" ]; then
+  touch "$PWD/local-dev.env"
+fi
+
 exec docker run --rm -it \
   -v "$PWD/build:/project/build" \
   -v "$PWD/src:/project/src" \
@@ -25,4 +29,5 @@ exec docker run --rm -it \
   -v "$PWD/package-lock.json:/project/package-lock.json" \
   -v "$PWD/package.json:/project/package.json" \
   -v "$PWD/tsconfig.json:/project/tsconfig.json" \
+  --env-file "$PWD/local-dev.env" \
   "$image_id" "$@"
