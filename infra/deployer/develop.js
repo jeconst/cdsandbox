@@ -1,4 +1,5 @@
 const path = require("path");
+const { spawn } = require("child_process");
 
 const ts = require("typescript");
 
@@ -10,21 +11,46 @@ function main() {
     {},
     ts.sys,
     ts.createSemanticDiagnosticsBuilderProgram,
-    reportDiagnostic,
-    reportDiagnostic,
+    handleDiagnostic,
+    handleDiagnostic,
   );
 
   ts.createWatchProgram(host);
 }
 
-function reportDiagnostic(diagnostic) {
-  const formatDiagnosticHost = {
-    getCanonicalFileName: path => path,
-    getCurrentDirectory: ts.sys.getCurrentDirectory,
-    getNewLine: () => ts.sys.newLine,
-  };
+const BEGIN_CODES = [6031, 6032];
+const END_CODES = [6193, 6194];
 
-  process.stdout.write(ts.formatDiagnostic(diagnostic, formatDiagnosticHost));
+let errors;
+
+function handleDiagnostic(diagnostic) {
+  if (BEGIN_CODES.includes(diagnostic.code)) {
+    process.stdout.write("\n-----------------------------------------------------------------\n\n");
+    errors = [];
+  } else if (END_CODES.includes(diagnostic.code)) {
+    if (errors.length === 0) {
+      process.stdout.write("TypeScript: OK\n");
+
+      const npm = spawn("npm", ["run", "test"], { stdio: "inherit" });
+      npm.on("close", code => {
+        console.log(`exited with code ${code}`);
+      });
+      npm.on("error", err => {
+        console.log(`failed: ${err}`);
+      });
+    } else {
+      process.stdout.write("\n(failed)\n");
+    }
+  } else {
+    const formatDiagnosticHost = {
+      getCanonicalFileName: path => path,
+      getCurrentDirectory: ts.sys.getCurrentDirectory,
+      getNewLine: () => ts.sys.newLine,
+    };
+
+    process.stdout.write(ts.formatDiagnostic(diagnostic, formatDiagnosticHost));
+    errors.push(diagnostic);
+  }
 }
 
 main();
