@@ -1,6 +1,6 @@
 import { Host } from "../core/host";
 
-import { RealAwsClient } from "./aws";
+import { LiveAwsClient } from "./aws";
 
 export function getSystemHost(): Host {
   return {
@@ -11,7 +11,7 @@ export function getSystemHost(): Host {
     },
 
     getAwsClient() {
-      return new RealAwsClient();
+      return new LiveAwsClient();
     },
   };
 }

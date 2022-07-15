@@ -17,7 +17,7 @@ export class Deployer {
   async init(): Promise<number> {
     this.output.info(`Initializing ECS deployment for '${this.config.projectName}'`);
 
-    const accountId = this.aws.getAccountId();
+    const accountId = await this.aws.getAccountId();
     this.output.info(
       `Connected to AWS account ${accountId}, region ${this.aws.region}`
     );

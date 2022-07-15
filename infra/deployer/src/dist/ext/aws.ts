@@ -1,6 +1,8 @@
 import { AwsCallerIdentity, AwsClient } from "../core/aws";
 
-export class RealAwsClient implements AwsClient {
+import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
+
+export class LiveAwsClient implements AwsClient {
   readonly region: string;
 
   constructor() {
@@ -13,11 +15,16 @@ export class RealAwsClient implements AwsClient {
     this.region = region;
   }
 
-  getStsCallerIdentity(): AwsCallerIdentity {
-    throw new Error("TODO");
+  async getStsCallerIdentity(): Promise<AwsCallerIdentity> {
+    const client = new STSClient({});
+    const result = await client.send(new GetCallerIdentityCommand({}));
+
+    return {
+      account: result.Account || "",
+    };
   }
 
-  createEcrRepository(options: { repositoryName: string }): void {
+  async createEcrRepository(options: { repositoryName: string }): Promise<void> {
     throw new Error("TODO");
   }
 }

@@ -21,13 +21,13 @@ export class FakeAwsClient implements AwsClient {
     this.region = region;
   }
 
-  getStsCallerIdentity(): AwsCallerIdentity {
+  async getStsCallerIdentity(): Promise<AwsCallerIdentity> {
     return {
       account: "12345678",
     };
   }
 
-  createEcrRepository(options: { repositoryName: string }): void {
+  async createEcrRepository(options: { repositoryName: string }): Promise<void> {
     this.state.ecr[options.repositoryName] = [];
   }
 }
