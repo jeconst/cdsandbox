@@ -1,5 +1,5 @@
-const path = require("path");
 const { spawn } = require("child_process");
+const path = require("path");
 
 const ts = require("typescript");
 
@@ -33,13 +33,13 @@ function handleDiagnostic(diagnostic) {
 
       const npm = spawn("npm", ["run", "test"], { stdio: "inherit" });
       npm.on("close", code => {
-        console.log(`exited with code ${code}`);
+        console.log(`jest exited with code ${code}`);
       });
       npm.on("error", err => {
-        console.log(`failed: ${err}`);
+        console.log(`Tests failed: ${err}`);
       });
     } else {
-      process.stdout.write("\n(failed)\n");
+      process.stdout.write("\nTypeScript: failed\n");
     }
   } else {
     const formatDiagnosticHost = {
