@@ -1,9 +1,10 @@
 import { AwsClient } from "../../dist/core/aws";
-import { Host, Terminal } from "../../dist/core/host";
+import { Host } from "../../dist/core/host";
 import { runProgram } from "../../dist/core/program";
 
 import { FakeAwsClient, AwsState, initialAwsState } from "./fake-aws";
 import { FakeTerminal } from "./fake-terminal";
+import { TestLab, TestAwsConfig } from "./test-lab";
 
 type stringMatcher = string | RegExp;
 export type TerminalOutputMatcher =
@@ -20,11 +21,11 @@ export type TestProgramOptions = {
   expectedAwsState?: AwsState;
 }
 
-class TestProcessHost implements Host {
+class TestHost implements Host {
   constructor(
-    public readonly terminal: Terminal,
-    private readonly env: Record<string, string> = {},
-    private readonly awsState: AwsState,
+    public terminal: FakeTerminal = new FakeTerminal(),
+    public env: Record<string, string | undefined> = {},
+    public awsState: AwsState = initialAwsState(),
   ) {}
 
   getAwsClient(): AwsClient {
@@ -32,41 +33,48 @@ class TestProcessHost implements Host {
   }
 }
 
-export class TestHarness {
-  private readonly awsState = initialAwsState();
+export class CoreTestLab implements TestLab {
+  host = new TestHost();
+
+  readonly awsConfig: TestAwsConfig = FakeAwsClient.config;
 
   async testProgram(options: TestProgramOptions): Promise<void> {
-    const terminal = new FakeTerminal();
-    const host = new TestProcessHost(terminal, options.env, this.awsState);
+    if (options.env) {
+      Object.assign(this.host.env, options.env);
+    }
 
-    const programRun = runProgram(host);
+    const programRun = runProgram(this.host);
 
     if (options.input !== undefined) {
       const inputJson = JSON.stringify(options.input);
-      terminal.stdin.write(inputJson + "\n");
+      this.host.terminal.stdin.write(inputJson + "\n");
     } else if (options.rawInput !== undefined) {
-      terminal.stdin.write(options.rawInput);
+      this.host.terminal.stdin.write(options.rawInput);
     }
 
-    terminal.stdin.end();
+    this.host.terminal.stdin.end();
 
     const exitCode = await programRun;
     expect(exitCode).toEqual(options.expectedExitCode);
 
     if (typeof options.expectedOutput === "string") {
-      expect(terminal.output()).toEqual(options.expectedOutput);
+      expect(this.host.terminal.output()).toEqual(options.expectedOutput);
     } else if (options.expectedOutput instanceof RegExp) {
-      expect(terminal.output()).toMatch(options.expectedOutput);
+      expect(this.host.terminal.output()).toMatch(options.expectedOutput);
     } else {
-      expect(terminal.output()).toMatchObject(options.expectedOutput);
+      expect(this.host.terminal.output()).toMatchObject(options.expectedOutput);
     }
 
     if (options.expectedAwsState) {
-      expect(this.getAwsState()).toMatchObject(options.expectedAwsState);
+      expect(this.host.awsState).toMatchObject(options.expectedAwsState);
     }
   }
 
-  private getAwsState() {
-    return this.awsState;
+  setEnvironmentVariable(name: string, value: string | undefined): void {
+    this.host.env[name] = value;
+  }
+
+  cleanUp() {
+    this.host = new TestHost();
   }
 }

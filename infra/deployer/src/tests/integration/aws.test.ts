@@ -1,67 +1,41 @@
-import { LiveAwsClient } from "../../dist/ext/aws";
+import { AwsClient } from "../../dist/core/aws";
+import { CoreTestLab } from "../support/core-test-lab";
+import { TestLab } from "../support/test-lab";
 
-type EnvVars = Record<string, string | undefined>
+import { IntegrationTestLab } from "./support/integration-test-lab";
 
-function captureEnvironmentVariables(): EnvVars {
-  return Object.fromEntries(Object.entries(process.env));
-}
+describe("AWS integration", () => {
+  describeAws(() => new IntegrationTestLab());
+});
 
-function setEnvironmentVariables(vars: EnvVars) {
-  for (const [key, value] of Object.entries(vars)) {
-    process.env[key] = value;
-  }
-}
+describe("AWS simulation", () => {
+  describeAws(() => new CoreTestLab());
+});
 
-type AwsEnvironmentConfig = {
-  region: string;
-  accountId: string,
-  accessKeyId: string;
-  secretAccessKey: string;
-  sessionToken: string | undefined;
-};
+function describeAws(testLabBuilder: () => TestLab) {
+  let lab: TestLab;
 
-function getRequiredEnvVar(name: string): string {
-  const value = process.env[name];
+  beforeEach(() => {
+    lab = testLabBuilder();
+  });
 
-  if (value === undefined) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-
-  return value;
-}
-
-let savedEnv: EnvVars;
-beforeAll(() => savedEnv = captureEnvironmentVariables());
-afterAll(() => setEnvironmentVariables(savedEnv));
-
-describe("LiveAwsClient", () => {
-  let client: LiveAwsClient;
-  let config: AwsEnvironmentConfig;
+  afterEach(() => lab.cleanUp());
 
   describe("when the credentials are valid", () => {
+    let client: AwsClient;
+
     beforeEach(() => {
-      config = {
-        // Note: These can be defined in local-dev.env
-        accountId: getRequiredEnvVar("TEST_AWS_ACCOUNT_ID"),
-        region: getRequiredEnvVar("TEST_AWS_REGION"),
-        accessKeyId: getRequiredEnvVar("TEST_AWS_ACCESS_KEY_ID"),
-        secretAccessKey: getRequiredEnvVar("TEST_AWS_SECRET_ACCESS_KEY"),
-        sessionToken: process.env["TEST_AWS_SESSION_TOKEN"],
-      };
+      lab.setEnvironmentVariable("AWS_REGION", lab.awsConfig.region);
+      lab.setEnvironmentVariable("AWS_ACCESS_KEY_ID", lab.awsConfig.accessKeyId);
+      lab.setEnvironmentVariable("AWS_SECRET_ACCESS_KEY", lab.awsConfig.secretAccessKey);
+      lab.setEnvironmentVariable("AWS_SESSION_TOKEN", lab.awsConfig.sessionToken);
 
-      setEnvironmentVariables({
-        AWS_REGION: config.region,
-        AWS_ACCESS_KEY_ID: config.accessKeyId,
-        AWS_SECRET_ACCESS_KEY: config.secretAccessKey,
-        AWS_SESSION_TOKEN: config.sessionToken,
-      });
-
-      client = new LiveAwsClient();
+      client = lab.host.getAwsClient();
     });
 
     describe("region", () => {
       it("returns the region", () => {
-        expect(client.region).toEqual(config.region);
+        expect(client.region).toEqual(lab.awsConfig.region);
       });
     });
 
@@ -69,14 +43,71 @@ describe("LiveAwsClient", () => {
       it("returns the caller identity", async () => {
         const result = await client.getStsCallerIdentity();
         expect(result).toEqual({
-          account: config.accountId,
+          account: lab.awsConfig.accountId,
         });
       });
     });
   });
 
   describe("when the credentials are invalid", () => {
-    it("throws an error", () => {
+    let client: AwsClient;
+
+    beforeEach(() => {
+      lab.setEnvironmentVariable("AWS_REGION", lab.awsConfig.region);
+      lab.setEnvironmentVariable("AWS_ACCESS_KEY_ID", lab.awsConfig.accessKeyId);
+      lab.setEnvironmentVariable("AWS_SECRET_ACCESS_KEY", "INVALIDSECRET");
+      lab.setEnvironmentVariable("AWS_SESSION_TOKEN", lab.awsConfig.sessionToken);
+
+      client = lab.host.getAwsClient();
+    });
+
+    describe("region", () => {
+      it("returns the configured environment variable", () => {
+        expect(client.region).toEqual(lab.awsConfig.region);
+      });
+    });
+
+    describe("getStsCallerIdentity", () => {
+      it("throws an error", async () => {
+        const error = await expectError(() => client.getStsCallerIdentity());
+        expect(error).toMatchObject({ Code: "SignatureDoesNotMatch" });
+      });
     });
   });
-});
+
+  describe("when the region is not set", () => {
+    let client: AwsClient;
+
+    beforeEach(() => {
+      lab.setEnvironmentVariable("AWS_REGION", undefined);
+      lab.setEnvironmentVariable("AWS_ACCESS_KEY_ID", lab.awsConfig.accessKeyId);
+      lab.setEnvironmentVariable("AWS_SECRET_ACCESS_KEY", lab.awsConfig.secretAccessKey);
+      lab.setEnvironmentVariable("AWS_SESSION_TOKEN", lab.awsConfig.sessionToken);
+
+      client = lab.host.getAwsClient();
+    });
+
+    describe("region", () => {
+      it("returns an empty string", () => {
+        expect(client.region).toEqual("");
+      });
+    });
+
+    describe("getStsCallerIdentity", () => {
+      it("throws an error", async () => {
+        await expectError(() => client.getStsCallerIdentity());
+      });
+    });
+  });
+}
+
+async function expectError<T>(func: () => Promise<T>): Promise<Error> {
+  try {
+    await func();
+  } catch (err) {
+    expect(err).toBeInstanceOf(Error);
+    return err as Error;
+  }
+
+  throw new Error("Expected error to be thrown, but was not");
+}

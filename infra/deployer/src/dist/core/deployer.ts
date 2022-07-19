@@ -1,5 +1,4 @@
-import { Aws } from "./aws";
-import { AwsClient } from "./aws";
+import { Aws, AwsClient } from "./aws";
 import { CommandConfig } from "./input";
 import { Output } from "./output";
 
@@ -26,7 +25,7 @@ export class Deployer {
 
     for (const repoName of reposToCreate) {
       this.output.info(`Creating ECR repository '${repoName}'`);
-      this.aws.createEcrRepository(repoName);
+      await this.aws.createEcrRepository(repoName);
     }
 
     this.output.info("Initialization complete!");

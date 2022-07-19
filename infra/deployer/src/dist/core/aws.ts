@@ -23,8 +23,8 @@ export class Aws {
     return callerIdentity.account;
   }
 
-  createEcrRepository(name: string): void {
-    this.client.createEcrRepository({
+  async createEcrRepository(name: string): Promise<void> {
+    await this.client.createEcrRepository({
       repositoryName: name,
     });
   }

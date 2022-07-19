@@ -1,12 +1,12 @@
-import { TestHarness } from "../../support/test-harness";
+import { CoreTestLab } from "../../support/core-test-lab";
 
-let harness: TestHarness;
+let lab: CoreTestLab;
 beforeEach(() => {
-  harness = new TestHarness();
+  lab = new CoreTestLab();
 });
 
 describe("info command", () => {
-  it("prints the version", () => harness.testProgram({
+  it("prints the version", () => lab.testProgram({
     input: { command: "info" },
     expectedExitCode: 0,
     expectedOutput: /aws-ecs-deployer v\d+\.\d+\.\d+\n/,

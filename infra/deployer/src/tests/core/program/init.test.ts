@@ -1,12 +1,12 @@
-import { TestHarness } from "../../support/test-harness";
+import { CoreTestLab } from "../../support/core-test-lab";
 
-let harness: TestHarness;
+let lab: CoreTestLab;
 beforeEach(() => {
-  harness = new TestHarness();
+  lab = new CoreTestLab();
 });
 
 describe("init command", () => {
-  it("initializes the ECR repository", () => harness.testProgram({
+  it("initializes the ECR repository", () => lab.testProgram({
     input: {
       command: "init",
       config: {
@@ -14,10 +14,9 @@ describe("init command", () => {
       },
     },
     env: {
-      AWS_ACCESS_KEY_ID: "TEST-KEY-ID",
-      AWS_SECRET_ACCESS_KEY: "TEST-SECRET-KEY",
-      AWS_SESSION_TOKEN: "TEST-SESSION-TOKEN",
-      AWS_REGION: "mars-2",
+      AWS_ACCESS_KEY_ID: lab.awsConfig.accessKeyId,
+      AWS_SECRET_ACCESS_KEY: lab.awsConfig.secretAccessKey,
+      AWS_REGION: lab.awsConfig.region,
     },
     expectedExitCode: 0,
     expectedOutput: `Initializing ECS deployment for 'my-cool-project'

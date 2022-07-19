@@ -1,11 +1,11 @@
-import { TestHarness } from "./test-harness";
+import { CoreTestLab } from "./core-test-lab";
 
-describe("TestHarness", () => {
+describe("CoreTestLab", () => {
   describe("testProgram", () => {
     it("validates the exit code", async () => {
-      const harness = new TestHarness();
+      const lab = new CoreTestLab();
 
-      const test = harness.testProgram({
+      const test = lab.testProgram({
         input: { command: "invalid" },
         expectedExitCode: 0,
         expectedOutput: "",
@@ -17,9 +17,9 @@ describe("TestHarness", () => {
     });
 
     it("validates the output", async () => {
-      const harness = new TestHarness();
+      const lab = new CoreTestLab();
 
-      const test = harness.testProgram({
+      const test = lab.testProgram({
         input: { command: "info" },
         expectedExitCode: 0,
         expectedOutput: "Yada yada",
