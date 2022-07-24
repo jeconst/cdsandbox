@@ -13,7 +13,7 @@
     "all": "npm run build && npm run test && npm run lint",
     "build": "rimraf 'build/*' && tsc",
     "check": "npm run test && npm run lint",
-    "develop": "node 'develop.js'"
+    "develop": "rimraf 'build/*' && node 'develop.js'"
   },
   "author": "",
   "license": "ISC",

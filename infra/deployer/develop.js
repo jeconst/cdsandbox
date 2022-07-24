@@ -10,7 +10,7 @@ function main() {
     tsConfigPath,
     {},
     ts.sys,
-    ts.createSemanticDiagnosticsBuilderProgram,
+    ts.createEmitAndSemanticDiagnosticsBuilderProgram,
     handleDiagnostic,
     handleDiagnostic,
   );
