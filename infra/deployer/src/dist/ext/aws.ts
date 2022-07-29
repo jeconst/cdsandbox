@@ -1,6 +1,7 @@
+import { ECRClient, DescribeRepositoriesCommand } from "@aws-sdk/client-ecr";
 import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
 
-import { AwsCallerIdentity, AwsClient } from "../core/aws";
+import { AwsClient, AwsCallerIdentity, DescribeRepositoriesResponse } from "../core/aws";
 
 export class LiveAwsClient implements AwsClient {
   readonly region: string;
@@ -20,5 +21,17 @@ export class LiveAwsClient implements AwsClient {
 
   async createEcrRepository(options: { repositoryName: string }): Promise<void> {
     throw new Error("TODO");
+  }
+
+  async describeEcrRepositories() {
+    const client = new ECRClient({});
+    const result = await client.send(new DescribeRepositoriesCommand({}));
+
+    return {
+      nextToken: result.nextToken,
+      repositories: result.repositories?.map(repo => ({
+        repositoryName: repo.repositoryName,
+      })) ?? [],
+    }
   }
 }

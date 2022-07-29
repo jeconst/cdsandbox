@@ -19,7 +19,9 @@ function describeAws(testLabBuilder: () => TestLab) {
     lab = testLabBuilder();
   });
 
-  afterEach(() => lab.cleanUp());
+  afterEach(() => {
+    lab.cleanUp();
+  });
 
   describe("when the credentials are valid", () => {
     let client: AwsClient;
@@ -44,6 +46,16 @@ function describeAws(testLabBuilder: () => TestLab) {
         const result = await client.getStsCallerIdentity();
         expect(result).toEqual({
           account: lab.awsConfig.accountId,
+        });
+      });
+    });
+
+    describe("ECR", () => {
+      it("lists, creates, and deletes repositories", async () => {
+        const describeResult = await client.describeEcrRepositories();
+        expect(describeResult).toMatchObject({
+          nextToken: null,
+          repositories: [],
         });
       });
     });
@@ -91,6 +103,25 @@ function describeAws(testLabBuilder: () => TestLab) {
       it("returns an empty string", () => {
         expect(client.region).toEqual("");
       });
+    });
+
+    describe("getStsCallerIdentity", () => {
+      it("throws an error", async () => {
+        await expectError(() => client.getStsCallerIdentity());
+      });
+    });
+  });
+
+  describe("when the region is invalid", () => {
+    let client: AwsClient;
+
+    beforeEach(() => {
+      lab.setEnvironmentVariable("AWS_REGION", "not-a-region");
+      lab.setEnvironmentVariable("AWS_ACCESS_KEY_ID", lab.awsConfig.accessKeyId);
+      lab.setEnvironmentVariable("AWS_SECRET_ACCESS_KEY", lab.awsConfig.secretAccessKey);
+      lab.setEnvironmentVariable("AWS_SESSION_TOKEN", lab.awsConfig.sessionToken);
+
+      client = lab.host.getAwsClient();
     });
 
     describe("getStsCallerIdentity", () => {

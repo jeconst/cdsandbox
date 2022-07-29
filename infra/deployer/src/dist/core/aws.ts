@@ -3,11 +3,19 @@ export interface AwsClient {
 
   getStsCallerIdentity(): Promise<AwsCallerIdentity>;
 
+  describeEcrRepositories(): Promise<DescribeRepositoriesResponse>;
   createEcrRepository(options: { repositoryName: string }): Promise<void>;
 }
 
 export interface AwsCallerIdentity {
   account: string;
+}
+
+export interface DescribeRepositoriesResponse {
+  nextToken: string | undefined;
+  repositories: Array<{
+    repositoryName: string | undefined;
+  }>;
 }
 
 export class Aws {

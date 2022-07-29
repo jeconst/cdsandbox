@@ -1,12 +1,11 @@
+import { strict as assert } from "assert";
+
 import { getSystemHost } from "../../../dist/ext/system-host";
 import { TestLab, TestAwsConfig } from "../../support/test-lab";
 
 function getRequiredEnvVar(name: string): string {
   const value = process.env[name];
-
-  if (value === undefined) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
+  assert(value !== undefined, `Missing required environment variable: ${name}`);
 
   return value;
 }

@@ -1,4 +1,4 @@
-import { AwsCallerIdentity, AwsClient } from "../../dist/core/aws";
+import { AwsCallerIdentity, AwsClient, DescribeRepositoriesResponse } from "../../dist/core/aws";
 
 import { TestAwsConfig } from "./test-lab";
 
@@ -44,6 +44,10 @@ export class FakeAwsClient implements AwsClient {
 
   async createEcrRepository(options: { repositoryName: string }): Promise<void> {
     this.state.ecr[options.repositoryName] = [];
+  }
+
+  async describeEcrRepositories(): Promise<DescribeRepositoriesResponse> {
+    throw new Error("TODO");
   }
 
   private checkEnvironment(): void {
