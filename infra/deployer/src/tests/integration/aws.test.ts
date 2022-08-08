@@ -127,7 +127,7 @@ function describeAws(testLabBuilder: () => TestLab) {
     describe("getStsCallerIdentity", () => {
       it("throws an error", async () => {
         await expectError(() => client.getStsCallerIdentity());
-      });
+      }, 30000);
     });
   });
 }
