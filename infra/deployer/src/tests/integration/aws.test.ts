@@ -52,10 +52,18 @@ function describeAws(testLabBuilder: () => TestLab) {
 
     describe("ECR", () => {
       it("lists, creates, and deletes repositories", async () => {
-        const describeResult = await client.describeEcrRepositories();
-        expect(describeResult).toMatchObject({
-          nextToken: null,
+        expect(await client.describeEcrRepositories()).toMatchObject({
+          nextToken: undefined,
           repositories: [],
+        });
+
+        await client.createEcrRepository({ repositoryName: "test1" });
+
+        expect(await client.describeEcrRepositories()).toMatchObject({
+          nextToken: undefined,
+          repositories: [
+            { repositoryName: "test1" },
+          ],
         });
       });
     });

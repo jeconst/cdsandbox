@@ -47,7 +47,12 @@ export class FakeAwsClient implements AwsClient {
   }
 
   async describeEcrRepositories(): Promise<DescribeRepositoriesResponse> {
-    throw new Error("TODO");
+    return {
+      nextToken: undefined,
+      repositories: Object.keys(this.state.ecr).map(repositoryName => ({
+        repositoryName,
+      })),
+    };
   }
 
   private checkEnvironment(): void {
